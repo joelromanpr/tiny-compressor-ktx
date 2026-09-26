@@ -240,7 +240,7 @@ public object ImageCompressor {
         }
 
     private fun ensureDirectory(directory: File) {
-        if (!directory.isDirectory && !directory.mkdirs()) {
+        if (!directory.isDirectory && !directory.mkdirs() && !directory.isDirectory) {
             throw IOException("Cannot create directory: $directory")
         }
     }

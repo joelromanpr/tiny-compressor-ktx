@@ -18,10 +18,12 @@ package com.joelromanpr.tinycompressor
 import java.io.File
 
 public sealed class Destination {
+    /** The exact output path. A known image extension must match the encoded format. */
     public data class File(
         public val file: java.io.File,
     ) : Destination()
 
+    /** A unique file below the app cache directory, using the encoded format's extension. */
     public data class Cache(
         public val subdir: String = "default",
     ) : Destination()

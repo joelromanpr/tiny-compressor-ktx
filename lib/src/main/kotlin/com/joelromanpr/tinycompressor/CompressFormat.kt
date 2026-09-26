@@ -16,7 +16,6 @@
 package com.joelromanpr.tinycompressor
 
 import android.graphics.Bitmap
-import android.os.Build
 
 public enum class CompressFormat {
     JPEG,
@@ -45,17 +44,10 @@ public enum class CompressFormat {
         return this
     }
 
-    internal fun toAndroid(options: Options): Bitmap.CompressFormat =
+    internal fun toAndroid(quality: Int): Bitmap.CompressFormat =
         when (this) {
             JPEG -> Bitmap.CompressFormat.JPEG
             PNG -> Bitmap.CompressFormat.PNG
-            WEBP -> {
-                if (Build.VERSION.SDK_INT >= 30 && options.quality >= 100) {
-                    Bitmap.CompressFormat.WEBP_LOSSLESS
-                } else {
-                    @Suppress("DEPRECATION")
-                    Bitmap.CompressFormat.WEBP
-                }
-            }
+            WEBP -> if (quality >= 100) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP_LOSSY
         }
 }

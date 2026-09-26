@@ -163,6 +163,32 @@ public class ImageCompressorTest {
         assertEquals(1, ImageCompressor.computeSampleSize(srcW = 1000, srcH = 1000, targetW = -1, targetH = 100))
     }
 
+    @Test
+    public fun `adaptive scale reduces both edges of a thin image proportionally`() {
+        val scale =
+            requireNotNull(
+                ImageCompressor.computeNextScale(
+                    baseWidth = 1000,
+                    baseHeight = 2,
+                    currentWidth = 1000,
+                    currentHeight = 2,
+                    proposedScale = 0.85,
+                ),
+            )
+        assertEquals(0.5, scale, 0.0001)
+        assertEquals(500, (1000 * scale).toInt())
+        assertEquals(1, (2 * scale).toInt())
+        assertNull(
+            ImageCompressor.computeNextScale(
+                baseWidth = 1000,
+                baseHeight = 2,
+                currentWidth = 500,
+                currentHeight = 1,
+                proposedScale = 0.4,
+            ),
+        )
+    }
+
     // endregion
 
     // region guessMimeFromName

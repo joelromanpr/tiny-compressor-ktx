@@ -17,6 +17,11 @@ package com.joelromanpr.tinycompressor
 
 /**
  * Public options for compression.
+ *
+ * [keepExif] retains selected JPEG metadata, including GPS coordinates when present. It defaults
+ * to true for compatibility; set it to false before uploading images when location and device
+ * metadata are not needed. [maxBytes] limits the complete encoded result, including copied EXIF.
+ * [quality] is clamped to 0..100; PNG encoding does not use the quality setting.
  */
 public data class Options(
     public val maxWidth: Int = 1280,

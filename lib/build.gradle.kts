@@ -28,24 +28,32 @@ dependencies {
     implementation("androidx.annotation:annotation:1.8.0")
     // Needed for EXIF preservation
     implementation("androidx.exifinterface:exifinterface:1.3.7")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    // Flow is part of the public API, so consumers need this at compile time.
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
 
     // Unit test deps
     testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation("androidx.test:core:1.6.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.exifinterface:exifinterface:1.3.7")
 }
 
-version = "1.0.0"
+version = providers.gradleProperty("VERSION_NAME").get()
 mavenPublishing {
+    publishToMavenCentral()
+
     coordinates(
-        groupId = "io.github.joelromanpr",
+        groupId = providers.gradleProperty("GROUP").get(),
         artifactId = "tiny-compressor-ktx",
         version = version.toString(),
     )
 
     pom {
-        name.set("tiny-compressor-ktx")
+        name.set("Tiny Compressor KTX")
         description.set(
-            "A tiny, modern image compression library for Android. Kotlin-first, coroutine/Flow-friendly, and Compose-ready with a small but powerful API. Sensible defaults, EXIF preservation, and efficient decoding via ImageDecoder on modern devices.",
+            "Kotlin image compression for Android with suspend and Flow APIs, JPEG, PNG, and WebP output, configurable dimensions and size limits, and optional EXIF preservation.",
         )
         url.set("https://github.com/joelromanpr/tiny-compressor-ktx")
 
@@ -66,7 +74,7 @@ mavenPublishing {
 
         scm {
             url.set("https://github.com/joelromanpr/tiny-compressor-ktx")
-            connection.set("scm:git:git://github.com/joelromanpr/tiny-compressor-ktx.git")
+            connection.set("scm:git:https://github.com/joelromanpr/tiny-compressor-ktx.git")
             developerConnection.set("scm:git:ssh://git@github.com/joelromanpr/tiny-compressor-ktx.git")
         }
     }

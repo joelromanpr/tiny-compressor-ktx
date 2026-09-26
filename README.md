@@ -1,241 +1,141 @@
 # Tiny Compressor KTX
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.joelromanpr/tiny-compressor-ktx.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.joelromanpr%22%20AND%20a:%22tiny-compressor-ktx%22)
+Android image compression with a small Kotlin API. Resize and encode images from a `File`, content `Uri`, or `ByteArray`; receive a file, bytes, or progress events from a `Flow`.
 
-A tiny, modern image compression library for Android. Kotlin-first, coroutine/Flow-friendly, and Compose-ready with a small but powerful API.
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.joelromanpr/tiny-compressor-ktx.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.joelromanpr/tiny-compressor-ktx)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Features
-- **Modern, concise API**: `suspend` functions and an optional `Flow` for progress.
-- **Small footprint**: No heavyweight image pipelines; lightweight EXIF support.
-- **Sensible defaults**: Safe max dimensions, quality, and color space.
-- **EXIF preservation**: Copies common EXIF tags for JPEG outputs.
-- **Broad format support**: JPEG, PNG, WEBP (lossy and lossless when applicable).
-- **Efficient decoding**: Uses `ImageDecoder` on API 28+ for predictable memory use.
-- **Compose-ready**: Easy to wire progress into your UI.
-- **Flexible I/O**:
-    - **Inputs**: `File`, `Uri`, `ByteArray`.
-    - **Outputs**: `File` or `ByteArray`.
+- **Android 11+ (`minSdk 30`)**
+- **Kotlin coroutines:** suspending calls for file and byte output; a `Flow` for coarse progress
+- **JPEG, PNG, and WebP:** bounded dimensions, configurable quality, and an optional strict byte limit
+- **Private by choice:** retain a supported subset of JPEG EXIF or opt out for uploads
 
-## Installation
-Make sure you have `mavenCentral()` in your root `settings.gradle.kts` repositories block:
+## Install
+
+Add Maven Central to your app's repositories (alongside Google's Android repository):
+
 ```kotlin
+// settings.gradle.kts
 dependencyResolutionManagement {
     repositories {
-        // ...
+        google()
         mavenCentral()
     }
 }
 ```
-Then, add the dependency to your module's `build.gradle.kts`:
+
+Then add the dependency:
+
 ```kotlin
+// app/build.gradle.kts
 dependencies {
     implementation("io.github.joelromanpr:tiny-compressor-ktx:1.0.0")
 }
 ```
 
-## Usage & Recipes
+**Release status:** `1.0.0` is the current Maven Central release. This README describes the `main` branch, where `1.1.0` is being prepared. The strict `maxBytes` guarantee, safe destination replacement, and corrected PNG/EXIF handling below require `1.1.0`; they are not claims about `1.0.0`. Clone this repository and run the demo to try the unreleased source. We will update the dependency snippet after `1.1.0` is verified on [Maven Central](https://central.sonatype.com/artifact/io.github.joelromanpr/tiny-compressor-ktx).
 
-### 1. Basic Compression (Fire-and-Forget)
-For simple cases where you don't need progress updates, use the `suspend` functions.
+## Compress an image
 
-**Compress a `File` to another `File`:**
+Call from a coroutine. Android's Photo Picker gives your app a readable content `Uri` without requesting broad media access.
+
 ```kotlin
-suspend fun compressPhoto(context: Context, inputFile: File): File {
-    return ImageCompressor.compress(
+import android.content.Context
+import android.net.Uri
+import com.joelromanpr.tinycompressor.ImageCompressor
+import com.joelromanpr.tinycompressor.Options
+import com.joelromanpr.tinycompressor.Source
+import java.io.File
+
+suspend fun prepareUpload(context: Context, pickedImage: Uri): File =
+    ImageCompressor.compress(
         context = context,
-        source = Source.File(inputFile),
+        source = Source.Uri(pickedImage),
         options = Options(
             maxWidth = 1600,
             maxHeight = 1600,
-            format = CompressFormat.JPEG,
-            quality = 82
-        )
+            quality = 82,
+            keepExif = false, // Do not copy camera details or GPS coordinates.
+        ),
     )
-}
 ```
 
-**Compress a content `Uri` to a `ByteArray`:**
+The returned file is in the app's cache by default. Upload it or move it to durable app storage before the cache is cleared. You can write to a specific app-owned file with `Options(destination = Destination.File(file))`.
+
+## Choose the result type
+
+| Call | Result | When to use it |
+| --- | --- | --- |
+| `ImageCompressor.compress(context, source, options)` | `File` | Save, share, or upload a file. |
+| `ImageCompressor.compressToByteArray(context, source, options)` | `ByteArray` | An API needs bytes; the entire output fits comfortably in memory. `destination` is ignored. |
+| `ImageCompressor.compressAsFlow(context, source, options)` | `Flow<Progress>` | Show approximate stage and percent updates. The final `Step.Done` event contains the file. |
+
+For example, to receive bytes without copying source EXIF:
+
 ```kotlin
-suspend fun compressFromUriToBytes(context: Context, uri: Uri): ByteArray {
-    return ImageCompressor.compressToByteArray(
-        context = context,
-        source = Source.Uri(uri),
-        options = Options(
-            maxWidth = 1280,
-            maxHeight = 1280,
-            format = CompressFormat.WEBP,
-            quality = 85
-        )
-    )
-}
-```
-
-### 2. Observing Progress with Flow
-For UI integration, use `compressAsFlow` to receive `Progress` updates.
-
-This example shows a `ViewModel` that launches compression and exposes the state to the UI.
-
-**ViewModel:**
-```kotlin
-data class CompressionState(
-    val inProgress: Boolean = false,
-    val percent: Int = 0,
-    val outputFile: File? = null,
-    val error: Throwable? = null
+val bytes = ImageCompressor.compressToByteArray(
+    context,
+    Source.Uri(pickedImage),
+    Options(keepExif = false),
 )
-
-class PhotoCompressViewModel(
-    private val appContext: android.content.Context
-) : ViewModel() {
-
-    private val _state = MutableStateFlow(CompressionState())
-    val state = _state.asStateFlow()
-
-    private var job: Job? = null
-
-    fun compress(uri: Uri) {
-        job?.cancel()
-        job = viewModelScope.launch {
-            ImageCompressor.compressAsFlow(
-                context = appContext,
-                source = Source.Uri(uri)
-            )
-            .onStart { _state.value = CompressionState(inProgress = true) }
-            .onCompletion { if (it != null) _state.value = _state.value.copy(inProgress = false, error = it) }
-            .collect { p ->
-                val isDone = p.step.isDone()
-                _state.value = _state.value.copy(
-                    inProgress = !isDone,
-                    percent = p.percent,
-                    outputFile = if (isDone) p.file else _state.value.outputFile
-                )
-            }
-        }
-    }
-}
 ```
 
-**Jetpack Compose Screen:**
-```kotlin
-@Composable
-fun PhotoCompressScreen(vm: PhotoCompressViewModel) {
-    val state by vm.state.collectAsStateWithLifecycle()
-    val pickMedia = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri != null) vm.compress(uri)
-    }
-
-    Column {
-        Button(
-            onClick = {
-                pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            },
-            enabled = !state.inProgress
-        ) {
-            Text("Pick & Compress Photo")
-        }
-
-        if (state.inProgress) {
-            LinearProgressIndicator(progress = state.percent / 100f)
-            Text("Compressing… ${state.percent}%")
-        }
-
-        state.outputFile?.let { file ->
-            Text("Output: ${file.absolutePath} (${file.length() / 1024} KB)")
-        }
-
-        state.error?.let {
-            Text("Error: ${it.message}", color = MaterialTheme.colorScheme.error)
-        }
-    }
-}
-```
-
-### 3. Background Compression with WorkManager
-For long-running or batch jobs, `WorkManager` is the best choice.
+To observe progress, collect the flow in a lifecycle-aware coroutine:
 
 ```kotlin
-class CompressWorker(
-    appContext: Context,
-    workerParams: WorkerParameters
-) : CoroutineWorker(appContext, workerParams) {
-    override suspend fun doWork(): Result {
-        val uriStr = inputData.getString("sourceUri") ?: return Result.failure()
-        val uri = Uri.parse(uriStr)
-
-        return try {
-            val outFile = ImageCompressor.compress(
-                context = applicationContext,
-                source = Source.Uri(uri)
-            )
-            Result.success(workDataOf("outPath" to outFile.absolutePath))
-        } catch (t: Throwable) {
-            Result.retry() // or Result.failure()
+ImageCompressor.compressAsFlow(context, Source.Uri(pickedImage))
+    .collect { progress ->
+        if (progress.step.isDone()) {
+            val outputFile = requireNotNull(progress.file)
+            // Use outputFile.
+        } else {
+            // Show progress.step and progress.percent (an estimate).
         }
     }
-}
-
-fun enqueueCompression(workManager: WorkManager, sourceUri: Uri) {
-    val request = OneTimeWorkRequestBuilder<CompressWorker>()
-        .setInputData(workDataOf("sourceUri" to sourceUri.toString()))
-        .setConstraints(Constraints(requiresStorageNotLow = true))
-        .build()
-    workManager.enqueue(request)
-}
 ```
 
-## API Reference
-```kotlin
-// Main entry points
-public object ImageCompressor {
-    public suspend fun compress(context: Context, source: Source, options: Options = Options()): File
-    public suspend fun compressToByteArray(context: Context, source: Source, options: Options = Options()): ByteArray
-    public fun compressAsFlow(context: Context, source: Source, options: Options = Options()): Flow<Progress>
-}
+A second compression should cancel the first job if its result is no longer needed. The [demo app](demo/src/main/java/com/joelromanpr/tinycompressor/demo/MainActivity.kt) shows a picker, progress, error handling, and before/after previews.
 
-// Configuration & State
-public data class Options(
-    public val maxWidth: Int = 1280,
-    public val maxHeight: Int = 1280,
-    public val format: CompressFormat = CompressFormat.JPEG,
-    public val quality: Int = 80,
-    public val maxBytes: Long? = null,
-    public val keepExif: Boolean = true,
-    public val colorSpace: ColorSpace = ColorSpace.SRGB,
-    public val destination: Destination = Destination.Cache()
-)
+## Options and behavior
 
-public data class Progress(
-    public val step: Step,
-    public val percent: Int,
-    public val file: File? = null
-)
+| Option | Default | Notes |
+| --- | --- | --- |
+| `maxWidth`, `maxHeight` | `1280` each | Preserve aspect ratio and avoid enlarging small images. |
+| `format` | `CompressFormat.JPEG` | PNG input stays PNG unless WebP is requested. See formats below. |
+| `quality` | `80` | Used for lossy JPEG/WebP. PNG encoding ignores it. |
+| `maxBytes` | `null` | When set, adaptive encoding must fit the final output within the limit or throws `IOException`. |
+| `keepExif` | `true` | For JPEG output, copies a supported subset of source EXIF, including GPS if present. Use `false` for privacy-sensitive uploads. |
+| `colorSpace` | `ColorSpace.SRGB` | `ColorSpace.DISPLAY_P3` is also available. |
+| `destination` | `Destination.Cache("default")` | File calls write under `context.cacheDir/tinycompressor/default/` unless you provide `Destination.File`. |
 
-public enum class Step {
-    Loading, Decoding, Resizing, Encoding, Writing, Done;
-    public fun isDone(): Boolean
-}
+### Formats and transparency
 
-// Inputs and Destination
-public sealed class Source {
-    public data class File(public val file: java.io.File) : Source()
-    public data class Uri(public val uri: android.net.Uri) : Source()
-    public data class Bytes(public val bytes: ByteArray) : Source()
-}
+- **JPEG** is usually a good choice for photos. It cannot preserve transparency.
+- **PNG** preserves transparency. Its `quality` setting does not change its lossless encoding.
+- **WebP** supports transparency. At quality `100`, Android 11+ uses lossless WebP when no byte limit forces a lower quality. With `maxBytes`, adaptive encoding may switch to lossy WebP.
 
-public sealed class Destination {
-    public data class File(public val file: java.io.File) : Destination()
-    public data class Cache(public val subdir: String = "images") : Destination()
-}
+The decoder identifies the input format from its content for `Source.File`, `Source.Uri`, and `Source.Bytes`. PNG input stays PNG when JPEG or PNG is requested; request WebP to convert it. For other transparent inputs, choose PNG or WebP explicitly. The cache filename extension matches the actual output format. For `Destination.File`, use an extension that matches the resolved format. A known image extension that does not match throws `IllegalArgumentException` before writing; an extensionless path is allowed.
+
+### EXIF, limits, and errors
+
+`keepExif = true` copies selected tags for JPEG output, not every metadata field. This includes camera details and GPS latitude/longitude when present. The image pixels are oriented during decode; the output orientation is normalized. Set `keepExif = false` before sharing or uploading images when source metadata is unnecessary.
+
+`maxBytes` may reduce quality and dimensions. The limit applies to the final file, including copied EXIF. A target too small to satisfy causes an `IOException`; handle it like other input or output failures. Invalid or unreadable images and inaccessible destinations also fail with an exception. Coroutine cancellation propagates; do not convert it into a retry or a generic failure.
+
+### Background jobs
+
+A picker `Uri` may not remain readable for a job that runs much later. For durable work, persist an eligible Photo Picker URI grant or copy the input to app-owned storage first. Write long-lived output to `Destination.File` instead of relying on the app cache. With WorkManager, retry only transient failures and let cancellation propagate. See Android's guidance on [persisting picker access](https://developer.android.com/training/data-storage/shared/photo-picker#persist-media-file-access) and [long-running workers](https://developer.android.com/develop/background-work/background-tasks/persistent/how-to/long-running).
+
+## Run the demo and contribute
+
+Open this repository in Android Studio and run the `demo` configuration on Android 11 or newer. To check a change locally:
+
+```bash
+./scripts/prepare_for_pr.sh
 ```
 
-## Best Practices
-- **Permissions**: This library only handles compression. Your app is responsible for requesting storage permissions or using Storage Access Framework (e.g., Photo Picker) to get a readable `Uri`.
-- **Threading**: All heavy work is dispatched to `Dispatchers.IO` internally. You can safely call these functions from the main thread.
-- **Lifecycle**: Keep compression work out of Composable functions. Trigger compression from a `ViewModel` or a `LaunchedEffect` tied to a specific state.
-- **Size Constraints**: To meet a specific file size (e.g., for uploads), set `maxBytes`. The library will first reduce quality (for lossy formats) and then downscale the image iteratively to meet the constraint.
-- **Transparency**: Prefer `PNG` or `WEBP` for images with an alpha channel. `JPEG` does not support transparency.
+See [CHANGELOG.md](CHANGELOG.md) for release notes and [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution and release process.
 
 ## License
-Licensed under the MIT License. See the root `LICENSE` file for details.
+
+[MIT](LICENSE)

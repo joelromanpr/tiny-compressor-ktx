@@ -1,40 +1,42 @@
-## How to Contribute
+# Contributing
 
-We'd love to accept your patches and contributions to this project. There are just a few small guidelines you need to
-follow.
+Thanks for helping improve Tiny Compressor KTX. Bug reports with a small input image (or a reproducible generator), Android version, options, expected result, and actual result are especially useful. Remove private EXIF and GPS data before attaching an image publicly.
 
----
-## Preparing a Pull Request for Review
-Ensure your change is properly formatted and adheres to our code standards by running the following command locally:
+## Make a change
+
+1. Create a branch from `main` and keep the patch focused.
+2. Add or update a test for a behavior change. For image bugs, cover the output's decoded dimensions, orientation, format, alpha, and/or final byte count as appropriate.
+3. Update the README or demo if you change public behavior.
+4. Run the local checks and include their result in the pull request:
 
 ```bash
-chmod +x ./scripts/prepare_for_pr.sh
 ./scripts/prepare_for_pr.sh
 ```
 
-### Suggested Commit Message Style (optional)
+This checks Spotless formatting, library debug unit tests, and the demo debug build. Run `./scripts/prepare_for_pr.sh --fix` to apply formatting before those checks. Pass Gradle flags after `--`, for example `./scripts/prepare_for_pr.sh -- --stacktrace`. An Android SDK and JDK 17 are needed for the build.
 
-To maintain a clean and understandable history, we try to follow the **Conventional Commits** specification. This style
-helps explain the **intent** of each commit and allows automated tools to generate changelogs.
+Device behavior such as EXIF orientation and output decoding needs an Android device or emulator check in addition to JVM tests. Note the tested API level in the pull request.
 
-A commit message ideally can be structured as follows:
+## Commit messages and versions
 
-$$\langle\text{type}\rangle(\langle\text{scope}\rangle)\text{!}\colon\ \langle\text{description}\rangle$$
+[Conventional Commits](https://www.conventionalcommits.org/) help readers follow changes. Examples:
 
-| Type         | Purpose                                                                      | Example                                                |
-|:-------------|:-----------------------------------------------------------------------------|:-------------------------------------------------------|
-| **feat**     | A **new feature** for the user/API (maps to a `MINOR` release).              | `feat: added @OptionGroup support`                     |
-| **fix**      | A bug **fix** (maps to a `PATCH` release).                                   | `fix(core): handle null pointer in Parser`             |
-| **docs**     | Documentation only changes.                                                  | `docs: update contribution guide with commit style`    |
-| **style**    | Formatting fixes, white-space, missing semicolons, etc. (no code change).    | `style: format Kotlin files with Spotless`             |
-| **refactor** | A code change that neither fixes a bug nor adds a feature.                   | `refactor(Parser): extract common logic to base class` |
-| **test**     | Adding missing tests or correcting existing tests.                           | `test(core): add unit test for Parser`                 |
-| **build**    | Changes that affect the build system or external dependencies (Gradle, npm). | `build: update Kotlin version to 1.9.0`                |
-| **ci**       | Changes to our CI configuration files and scripts.                           | `ci: set up basic GitHub Actions workflow`             |
+- `fix: preserve portrait orientation after JPEG compression`
+- `feat: add a new output format`
+- `docs: clarify EXIF privacy behavior`
 
-**Note on Breaking Changes:** If your change is a major, backward-incompatible API change, include an exclamation mark *
-*`!`** before the colon to signal a **BREAKING CHANGE** (e.g., `feat(Parser)!: remove old configuration method`).
+Releases follow semantic versioning: patches fix compatible behavior, minor versions add compatible features, and major versions allow incompatible API changes. Mark an incompatible change with `!` in the commit subject and explain it in the pull request.
 
+## Maintainer release checklist
 
+1. Choose a new version and update `VERSION_NAME` in the root `gradle.properties`. Do not reuse a version already sent to Maven Central.
+2. Run the checks above and review the README installation version and release notes.
+3. Merge the validated release commit to `main`.
+4. Create and push an annotated `vX.Y.Z` tag on that exact commit. The tag-triggered GitHub Actions release job checks version parity and the `main` commit, runs its test gates (including an API 30 emulator), then publishes through the protected environment.
+5. Verify the artifact and POM on Maven Central before announcing availability or updating the README's release status.
 
+Publishing needs the maintainer's Maven Central credentials and signing key stored in the GitHub environment. Pull requests do not publish.
 
+## License
+
+By contributing, you agree that your contribution is licensed under this repository's [MIT License](LICENSE).

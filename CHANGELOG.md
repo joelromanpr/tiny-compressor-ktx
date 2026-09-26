@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 — unreleased
+## 1.1.0 — 2026-09-25
 
 - Stage output before replacing a destination file, so failed encoding leaves an existing file intact. Concurrent cache outputs get unique names.
 - Make `compressToByteArray` independent of `Options.destination`. Byte output avoids a disk round trip when JPEG EXIF retention is off.

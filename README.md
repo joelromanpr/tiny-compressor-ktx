@@ -29,11 +29,11 @@ Then add the dependency:
 ```kotlin
 // app/build.gradle.kts
 dependencies {
-    implementation("io.github.joelromanpr:tiny-compressor-ktx:1.0.0")
+    implementation("io.github.joelromanpr:tiny-compressor-ktx:1.1.0")
 }
 ```
 
-**Release status:** `1.0.0` is the current Maven Central release. This README describes the `main` branch, where `1.1.0` is being prepared. The strict `maxBytes` guarantee, safe destination replacement, and corrected PNG/EXIF handling below require `1.1.0`; they are not claims about `1.0.0`. Clone this repository and run the demo to try the unreleased source. We will update the dependency snippet after `1.1.0` is verified on [Maven Central](https://central.sonatype.com/artifact/io.github.joelromanpr/tiny-compressor-ktx).
+See the [v1.1.0 release notes](https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.1.0) for the changes in this version.
 
 ## Compress an image
 

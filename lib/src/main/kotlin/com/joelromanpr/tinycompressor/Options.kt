@@ -32,4 +32,24 @@ public data class Options(
     public val keepExif: Boolean = true,
     public val colorSpace: ColorSpace = ColorSpace.SRGB,
     public val destination: Destination = Destination.Cache(subdir = "default"),
-)
+) {
+    public companion object {
+        /** Creates upload options that omit source EXIF and enforce the complete output byte limit. */
+        @JvmStatic
+        public fun forUpload(
+            maxBytes: Long,
+            maxWidth: Int = 1600,
+            maxHeight: Int = 1600,
+            quality: Int = 82,
+        ): Options {
+            require(maxBytes > 0) { "maxBytes must be greater than zero" }
+            return Options(
+                maxWidth = maxWidth,
+                maxHeight = maxHeight,
+                quality = quality,
+                maxBytes = maxBytes,
+                keepExif = false,
+            )
+        }
+    }
+}

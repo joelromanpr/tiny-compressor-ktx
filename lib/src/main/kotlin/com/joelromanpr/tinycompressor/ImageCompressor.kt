@@ -18,7 +18,9 @@ package com.joelromanpr.tinycompressor
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.provider.OpenableColumns
 import androidx.exifinterface.media.ExifInterface
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -60,7 +62,22 @@ public object ImageCompressor {
         options: Options = Options(),
     ): File =
         withContext(Dispatchers.IO) {
-            internalCompressToFile(context, source, options, null)
+            internalCompressToFile(context, source, options, null).file
+        }
+
+    /**
+     * Compresses an image and reports the size, dimensions, format, and quality actually written.
+     *
+     * Source sizes are read before replacing a destination. For URI sources, [CompressionResult.inputBytes]
+     * uses the provider's reported size when available; missing size metadata does not prevent compression.
+     */
+    public suspend fun compressWithResult(
+        context: Context,
+        source: Source,
+        options: Options = Options(),
+    ): CompressionResult =
+        withContext(Dispatchers.IO) {
+            internalCompressToFile(context, source, options, null, includeSourceSize = true)
         }
 
     /**
@@ -87,9 +104,9 @@ public object ImageCompressor {
                         null
                     }
                 try {
-                    val bytes = encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, null)
+                    val encoded = encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, null)
                     currentCoroutineContext().ensureActive()
-                    bytes ?: requireNotNull(stagingFile).readBytes()
+                    encoded.bytes ?: requireNotNull(stagingFile).readBytes()
                 } finally {
                     stagingFile?.delete()
                 }
@@ -117,7 +134,7 @@ public object ImageCompressor {
                 }
             val resultFile =
                 withContext(Dispatchers.IO) {
-                    internalCompressToFile(context, source, options, progress)
+                    internalCompressToFile(context, source, options, progress).file
                 }
             send(Progress(Step.Done, 100, resultFile))
         }
@@ -127,8 +144,10 @@ public object ImageCompressor {
         source: Source,
         options: Options,
         progress: ProgressEmitter?,
-    ): File {
+        includeSourceSize: Boolean = false,
+    ): CompressionResult {
         validateOptions(options)
+        val inputBytes = if (includeSourceSize) sourceByteCount(context, source) else null
         progress?.emit(Step.Decoding, 5)
         val decoded = decodeBitmap(context, source, options)
         try {
@@ -139,16 +158,25 @@ public object ImageCompressor {
             val stagingFile = File.createTempFile(".tinycompressor-", ".tmp", parent)
             try {
                 progress?.emit(Step.Resizing, 55)
-                encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, progress)
+                val encoded = encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, progress)
                 progress?.emit(Step.Writing, 95)
                 currentCoroutineContext().ensureActive()
+                val outputBytes = stagingFile.length()
                 Files.move(
                     stagingFile.toPath(),
                     destination.toPath(),
                     StandardCopyOption.ATOMIC_MOVE,
                     StandardCopyOption.REPLACE_EXISTING,
                 )
-                return destination
+                return CompressionResult(
+                    file = destination,
+                    inputBytes = inputBytes,
+                    outputBytes = outputBytes,
+                    width = encoded.width,
+                    height = encoded.height,
+                    format = format,
+                    appliedQuality = encoded.quality,
+                )
             } finally {
                 stagingFile.delete()
             }
@@ -161,6 +189,38 @@ public object ImageCompressor {
         val bitmap: Bitmap,
         val mime: String,
     )
+
+    private data class EncodedImage(
+        val bytes: ByteArray?,
+        val width: Int,
+        val height: Int,
+        val quality: Int?,
+    )
+
+    private fun sourceByteCount(
+        context: Context,
+        source: Source,
+    ): Long? =
+        when (source) {
+            is Source.File -> source.file.takeIf { it.isFile }?.length()
+            is Source.Bytes -> source.bytes.size.toLong()
+            is Source.Uri ->
+                try {
+                    context.contentResolver.query(source.uri, arrayOf(OpenableColumns.SIZE), null, null, null)?.use { cursor ->
+                        val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+                        if (index >= 0 && cursor.moveToFirst() && !cursor.isNull(index)) {
+                            cursor.getLong(index).takeIf { it >= 0 }
+                        } else {
+                            null
+                        }
+                    }
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (_: RuntimeException) {
+                    // Size metadata is optional; providers may reject queries but still allow image reads.
+                    null
+                }
+        }
 
     private fun validateOptions(options: Options) {
         require(options.maxWidth > 0) { "maxWidth must be greater than zero" }
@@ -312,7 +372,7 @@ public object ImageCompressor {
         format: CompressFormat,
         stagingFile: File?,
         progress: ProgressEmitter?,
-    ): ByteArray? {
+    ): EncodedImage {
         val androidFormat = format.toAndroid(options.quality.coerceIn(0, 100))
         progress?.emit(Step.Encoding, 70)
         currentCoroutineContext().ensureActive()
@@ -326,14 +386,19 @@ public object ImageCompressor {
                 }
                 if (options.keepExif && format == CompressFormat.JPEG) copyExif(context, source, stagingFile)
                 currentCoroutineContext().ensureActive()
-                return null
+                return EncodedImage(null, bitmap.width, bitmap.height, options.quality.takeIf { format.isLossy() }?.coerceIn(0, 100))
             }
             val output = ByteArrayOutputStream()
             if (!bitmap.compress(androidFormat, options.quality.coerceIn(0, 100), output)) {
                 throw IOException("Bitmap encoder failed")
             }
             currentCoroutineContext().ensureActive()
-            return output.toByteArray()
+            return EncodedImage(
+                output.toByteArray(),
+                bitmap.width,
+                bitmap.height,
+                options.quality.takeIf { format.isLossy() }?.coerceIn(0, 100),
+            )
         }
 
         val maxBytes = options.maxBytes
@@ -351,12 +416,14 @@ public object ImageCompressor {
                 var outputSize = output.size().toLong()
                 if (outputSize <= maxBytes) {
                     if (stagingFile == null) {
-                        return output.toByteArray()
+                        return EncodedImage(output.toByteArray(), current.width, current.height, quality.takeIf { format.isLossy() })
                     }
                     BufferedOutputStream(FileOutputStream(stagingFile)).use { output.writeTo(it) }
                     if (options.keepExif && format == CompressFormat.JPEG) copyExif(context, source, stagingFile)
                     outputSize = stagingFile.length()
-                    if (outputSize <= maxBytes) return null
+                    if (outputSize <= maxBytes) {
+                        return EncodedImage(null, current.width, current.height, quality.takeIf { format.isLossy() })
+                    }
                 }
 
                 if (format.isLossy() && quality > 30) {

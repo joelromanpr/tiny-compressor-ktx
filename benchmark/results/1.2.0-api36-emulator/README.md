@@ -1,6 +1,6 @@
 # 1.2.0 release-candidate measurements
 
-Recorded November 11, 2026 from clean public revision [`443a3ee28353f94f360291eed72964cbcc0e28d5`](https://github.com/joelromanpr/tiny-compressor-ktx/commit/443a3ee28353f94f360291eed72964cbcc0e28d5), with `VERSION_NAME=1.2.0`. Only report files were added after the runs. [Source hashes](source-hashes.json) retain the exact library, harness, assets, and build configuration used.
+Recorded November 11, 2026 from clean public revision [`443a3ee28353f94f360291eed72964cbcc0e28d5`](https://github.com/joelromanpr/tiny-compressor-ktx/commit/443a3ee28353f94f360291eed72964cbcc0e28d5), with `VERSION_NAME=1.2.0`. The release preparation also includes a KDoc clarification. The integrated library AAR remains byte-identical to the measured build (SHA-256 `3e3bd8ea37a3867607d2aabc61511e13cbf2b36c3279197f15087224e900dd5a`). [Source hashes](source-hashes.json) retain the exact library, harness, assets, and build configuration used.
 
 ## Compression
 

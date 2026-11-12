@@ -8,3 +8,5 @@ Recorded November 11, 2026. This is an **Android API 36 arm64 emulator run** use
 The footprint comparison used AGP 8.13.1, Kotlin 2.0.21, compile/target SDK 36, min SDK 30, and Java bytecode target 11. Both flavors use the same source and have code/resource shrinking disabled. Existing apps may already include these dependencies, and R8 can remove unused code. This is not an estimate of Play download size or installed size.
 
 See the [methodology](../../README.md) and [image provenance](../../SOURCES.md) before comparing these values. In particular, RGB PSNR is evaluated at each output's dimensions; process PSS includes the runtime and previous allocations. Future releases need their own recorded run.
+
+The measured revision IDs above were recorded before this PR was rebased. The library implementation matches the published repository at [`9be0f61`](https://github.com/joelromanpr/tiny-compressor-ktx/commit/9be0f61). [Source hashes](source-hashes.json) retain the exact harness, configuration, and library inputs used for each measurement. Current main may contain newer behavior; use a new run when evaluating it.

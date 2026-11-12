@@ -21,7 +21,7 @@ Closes #<issue-number>
 - [ ] Build passes locally
   ```bash
   ./gradlew build
- 
+  ```
 
 ## Reviewer Notes (optional)
 Call out anything that deserves extra attention or context.

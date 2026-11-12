@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.1
+## 1.2.1 — 2026-11-12
 
 - Make upload-recipe cleanup safe when cancellation, completion observers, and reconciliation remove the same directory concurrently.
 - Add regression coverage for concurrent removal and already-removed paths.

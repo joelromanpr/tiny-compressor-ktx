@@ -146,7 +146,7 @@ Cache extensions match the resolved format. For `Destination.File`, use a matchi
 
 The [benchmark methodology](benchmark/README.md) explains timing, memory, visual-error metrics, and footprint measurements. Recorded 1.2.0 baseline: [compression table](benchmark/results/1.2.0-api36-emulator/summary.md), [raw samples](benchmark/results/1.2.0-api36-emulator/results.json), and [dependency footprint](benchmark/results/1.2.0-api36-emulator/dependency-footprint.json). The [1.1.0 baseline](benchmark/results/1.1.0-api36-emulator/README.md) is retained separately.
 
-These measurements were recorded for 1.2.0; no 1.2.1 benchmark run is included. The [1.2.1 publication record](artifacts/releases/1.2.1/verification.json) covers verification of the current artifact.
+These measurements were recorded for 1.2.0. The [1.2.1 publication record](artifacts/releases/1.2.1/verification.json) verifies that the current library AAR is byte-identical to that measured build.
 
 The recorded runs use an emulator; timings do not establish physical-device performance. PSNR is compared at each output's dimensions and does not count detail lost by downscaling. Sampled process PSS is not a guaranteed peak or per-operation allocation count. The footprint comparison disables shrinking and includes transitive dependencies; it does not predict R8, installed size, or Play download size.
 

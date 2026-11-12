@@ -27,6 +27,8 @@ jobs:
           cache-provider: basic
       - name: Build, run unit tests, and check formatting
         run: ./gradlew build spotlessCheck
+      - name: Compile benchmark instrumentation and check formatting
+        run: ./gradlew -PincludeBenchmarks=true :benchmark:assembleDebugAndroidTest :benchmark:spotlessCheck
       - name: Upload unit test reports
         if: always()
         uses: actions/upload-artifact@v7

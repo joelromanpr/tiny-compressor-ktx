@@ -1,0 +1,176 @@
+{
+  "verifiedAtUtc": "2026-11-12T03:27:58.715196+00:00",
+  "coordinates": "io.github.joelromanpr:tiny-compressor-ktx:1.2.0",
+  "tag": "v1.2.0",
+  "tagObject": "243a047a0a0e98b6f4201b7fb26bb51519044542",
+  "sourceCommit": "5cd0570ab103124452cf2f7522f812f4aacbac5f",
+  "publishingWorkflow": {
+    "url": "https://github.com/joelromanpr/tiny-compressor-ktx/actions/runs/43145871433",
+    "conclusion": "success",
+    "deviceApiLevels": [
+      28,
+      30,
+      36
+    ],
+    "libraryDeviceTestsPerApi": 18,
+    "demoDeviceTestsPerApi": 6,
+    "uniqueJvmTests": 29
+  },
+  "central": {
+    "files": [
+      {
+        "name": "tiny-compressor-ktx-1.2.0.pom",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0.pom",
+        "bytes": 2480,
+        "sha256": "7ced6ce6ac6a15ba5ae9157e658b6d0b13df992562298a039e6c6f7cde8ee361"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0.aar",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0.aar",
+        "bytes": 93781,
+        "sha256": "3e3bd8ea37a3867607d2aabc61511e13cbf2b36c3279197f15087224e900dd5a"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0.module",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0.module",
+        "bytes": 4665,
+        "sha256": "fdb4f6e7dad413f14a9dc73846b434c02a91cfd3e7d4a89658fdbd316e051d51"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0-sources.jar",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0-sources.jar",
+        "bytes": 18273,
+        "sha256": "c80106085265221f21ed5a088cc370cca4327505eb17dae486cc029176b01e7e"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0-javadoc.jar",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0-javadoc.jar",
+        "bytes": 344579,
+        "sha256": "7b0e3bd3d9a8cf1122f9388d3f6185e00d33fadb341aa8a494ce85ffbad59108"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0.pom.asc",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0.pom.asc",
+        "bytes": 831,
+        "sha256": "74fa95cf92d254309e166b72d65693cccc5d91590b8d46b0f879cd6021bd7e80"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0.aar.asc",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0.aar.asc",
+        "bytes": 831,
+        "sha256": "8a789a82b536284dc4cbb9520b210d48ce3b4e49a804ad728e53bcb04e4bfea5"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0-sources.jar.asc",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0-sources.jar.asc",
+        "bytes": 831,
+        "sha256": "6833daa82bc3457b7976722dc151e23520894ec54619a9ec308bb880c1ae3a77"
+      },
+      {
+        "name": "tiny-compressor-ktx-1.2.0-javadoc.jar.asc",
+        "url": "https://repo.maven.apache.org/maven2/io/github/joelromanpr/tiny-compressor-ktx/1.2.0/tiny-compressor-ktx-1.2.0-javadoc.jar.asc",
+        "bytes": 831,
+        "sha256": "004d12153f50bb96b5193c7dec2e634076ece78f9ec8f88917c59a6eda4d6c85"
+      }
+    ],
+    "checks": {
+      "pomCoordinates": true,
+      "aarArchive": true,
+      "sourceArchive": true,
+      "javadocArchive": true,
+      "signatureFilesPresent": true,
+      "gradleMetadataVersion": true,
+      "coroutinesCompileScope": true
+    },
+    "minSdk": 28,
+    "dependencies": [
+      {
+        "group": "org.jetbrains.kotlinx",
+        "artifact": "kotlinx-coroutines-core",
+        "scope": "compile"
+      },
+      {
+        "group": "org.jetbrains.kotlin",
+        "artifact": "kotlin-stdlib",
+        "scope": "compile"
+      },
+      {
+        "group": "androidx.annotation",
+        "artifact": "annotation",
+        "scope": "runtime"
+      },
+      {
+        "group": "androidx.exifinterface",
+        "artifact": "exifinterface",
+        "scope": "runtime"
+      }
+    ]
+  },
+  "consumer": {
+    "status": "passed",
+    "checks_passed": 4,
+    "checks_failed": 0,
+    "checks": {
+      "isolated_consumer_build": true,
+      "published_binary_api": true,
+      "published_sources_match_tag": true,
+      "published_aar_matches_candidate": true
+    },
+    "dependency": "io.github.joelromanpr:tiny-compressor-ktx:1.2.0",
+    "consumer": {
+      "min_sdk": 28,
+      "compile_sdk": 36,
+      "gradle": "8.13",
+      "agp": "8.13.1",
+      "kotlin": "2.0.21",
+      "build_exit_code": 0,
+      "actionable_tasks_executed": 26,
+      "compiled_api_fixture": true,
+      "direct_coroutines_dependency": false,
+      "transitive_coroutines": "1.9.0",
+      "global_init_scripts_disabled": true,
+      "local_project_substitution": false,
+      "resolved_aar_matches_central": true,
+      "consumer_artifact": "tiny-compressor-central-consumer-debug.aar"
+    },
+    "binary_api": {
+      "old_classes_retained": 14,
+      "old_descriptors_retained": 128,
+      "published_classes": 22,
+      "published_descriptors": 219,
+      "added_classes": 8,
+      "added_descriptors": 91,
+      "incompatible_changes": 0
+    },
+    "published_sources": {
+      "tag": "v1.2.0",
+      "tag_commit": "5cd0570ab103124452cf2f7522f812f4aacbac5f",
+      "files_checked": 13,
+      "mismatches": 0
+    },
+    "published_aar_sha256": "3e3bd8ea37a3867607d2aabc61511e13cbf2b36c3279197f15087224e900dd5a",
+    "candidate_aar_sha256": "3e3bd8ea37a3867607d2aabc61511e13cbf2b36c3279197f15087224e900dd5a"
+  },
+  "apiCheckScope": "Public/protected JVM descriptors, including Kotlin defaults, copy methods, marker constructors, and JVM-public internal members; compiler-private access bridges excluded.",
+  "githubRelease": {
+    "url": "https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.2.0",
+    "assets": [
+      {
+        "name": "tiny-compressor-demo.apk",
+        "url": "https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.0/tiny-compressor-demo.apk",
+        "bytes": 33587028,
+        "sha256": "93d9197e30b4e03165d37c31241023c34708801cb0bc0bec3c9cf3df902b007b"
+      },
+      {
+        "name": "SHA256SUMS",
+        "url": "https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.0/SHA256SUMS",
+        "bytes": 91,
+        "sha256": "37df899d728146d3e60b1ed4a5454f570e68e182e62ea89c1bd2a27cdaf5ce00"
+      }
+    ],
+    "apkChecksumMatches": true,
+    "applicationId": "com.joelromanpr.tinycompressor.demo",
+    "versionName": "1.2.0",
+    "minSdk": 28
+  }
+}

@@ -3,6 +3,7 @@
 Prepare Android images for upload with Kotlin coroutines. Set a file-size limit, omit source EXIF, and get the output file with its actual dimensions, format, and size. Supports **Android 9+ (API 28)**, JPEG, PNG, and WebP.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.joelromanpr/tiny-compressor-ktx.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.joelromanpr/tiny-compressor-ktx)
+[![Build](https://github.com/joelromanpr/tiny-compressor-ktx/actions/workflows/build_test_publish.yml/badge.svg?branch=main)](https://github.com/joelromanpr/tiny-compressor-ktx/actions/workflows/build_test_publish.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ```kotlin
@@ -31,7 +32,7 @@ dependencies {
 }
 ```
 
-[Release notes](https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.2.0) · [Try the demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.0/tiny-compressor-demo.apk)
+[Release notes](https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.2.0) · [Try the demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.0/tiny-compressor-demo.apk) · [Publication checks](artifacts/releases/1.2.0/verification.json)
 
 ## Prepare an image
 

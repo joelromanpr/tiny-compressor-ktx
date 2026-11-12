@@ -82,9 +82,7 @@ fun PhotoUploadRecipe(
                         uploadPickedImage(context, request.uri, uploader, request.key) {
                             if (current == generation) message = "Uploading photo…"
                         }
-                    if (current ==
-                        generation
-                    ) {
+                    if (current == generation) {
                         message = "Uploaded ${receipt.bytes} bytes · ${receipt.width} × ${receipt.height} · ${receipt.mimeType}"
                     }
                 } catch (cancelled: CancellationException) {

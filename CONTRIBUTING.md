@@ -38,7 +38,7 @@ Releases follow semantic versioning: patches fix compatible behavior, minor vers
 1. Choose a new version and update `VERSION_NAME` in the root `gradle.properties`. Do not reuse a version already sent to Maven Central.
 2. Run the checks above and review the README installation version and release notes.
 3. Merge the validated release commit to `main`.
-4. Create and push an annotated `vX.Y.Z` tag on that exact commit. The tag-triggered GitHub Actions release job checks version parity and the `main` commit, runs its test gates (including an API 30 emulator), then publishes through the protected environment.
+4. Create and push an annotated `vX.Y.Z` tag on that exact commit. The tag-triggered GitHub Actions release job checks version parity and the `main` commit, runs its test gates (including API 28, 30, and 36 emulators), then publishes through the protected environment.
 5. Verify the artifact and POM on Maven Central before announcing availability or updating the README's release status.
 
 Publishing needs the maintainer's Maven Central credentials and signing key stored in the GitHub environment. Pull requests do not publish.

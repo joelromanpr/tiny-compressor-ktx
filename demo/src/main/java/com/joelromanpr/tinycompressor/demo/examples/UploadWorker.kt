@@ -62,9 +62,7 @@ class UploadWorker(
             try {
                 uploader.upload(image, id.toString())
             } catch (_: TransientUploadException) {
-                return if (runAttemptCount + 1 <
-                    MAX_UPLOAD_ATTEMPTS
-                ) {
+                return if (runAttemptCount + 1 < MAX_UPLOAD_ATTEMPTS) {
                     Result.retry()
                 } else {
                     Result.failure(workDataOf("reason" to "upload_retries_exhausted"))

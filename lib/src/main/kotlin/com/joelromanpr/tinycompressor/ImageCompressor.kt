@@ -91,6 +91,13 @@ public object ImageCompressor {
         context: Context,
         source: Source,
         options: Options = Options(),
+    ): ByteArray = compressBytes(context, source, options, null)
+
+    private suspend fun compressBytes(
+        context: Context,
+        source: Source,
+        options: Options,
+        constraints: CompressionConstraints?,
     ): ByteArray =
         withContext(Dispatchers.IO) {
             validateOptions(options)
@@ -104,7 +111,7 @@ public object ImageCompressor {
                         null
                     }
                 try {
-                    val encoded = encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, null)
+                    val encoded = encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, null, constraints)
                     currentCoroutineContext().ensureActive()
                     encoded.bytes ?: requireNotNull(stagingFile).readBytes()
                 } finally {
@@ -120,6 +127,13 @@ public object ImageCompressor {
         context: Context,
         source: Source,
         options: Options = Options(),
+    ): Flow<Progress> = compressionFlow(context, source, options, null)
+
+    private fun compressionFlow(
+        context: Context,
+        source: Source,
+        options: Options,
+        constraints: CompressionConstraints?,
     ): Flow<Progress> =
         channelFlow {
             send(Progress(Step.Loading, 0))
@@ -134,10 +148,48 @@ public object ImageCompressor {
                 }
             val resultFile =
                 withContext(Dispatchers.IO) {
-                    internalCompressToFile(context, source, options, progress).file
+                    internalCompressToFile(context, source, options, progress, constraints = constraints).file
                 }
             send(Progress(Step.Done, 100, resultFile))
         }
+
+    /** Compresses without reducing quality or dimensions below [constraints]. */
+    public suspend fun compress(
+        context: Context,
+        source: Source,
+        options: Options = Options(),
+        constraints: CompressionConstraints,
+    ): File =
+        withContext(Dispatchers.IO) {
+            internalCompressToFile(context, source, options, null, constraints = constraints).file
+        }
+
+    /** Reports the actual output while enforcing [constraints]. */
+    public suspend fun compressWithResult(
+        context: Context,
+        source: Source,
+        options: Options = Options(),
+        constraints: CompressionConstraints,
+    ): CompressionResult =
+        withContext(Dispatchers.IO) {
+            internalCompressToFile(context, source, options, null, includeSourceSize = true, constraints = constraints)
+        }
+
+    /** Encodes bytes without reducing quality or dimensions below [constraints]. */
+    public suspend fun compressToByteArray(
+        context: Context,
+        source: Source,
+        options: Options = Options(),
+        constraints: CompressionConstraints,
+    ): ByteArray = compressBytes(context, source, options, constraints)
+
+    /** Emits approximate stage progress while enforcing [constraints]. */
+    public fun compressAsFlow(
+        context: Context,
+        source: Source,
+        options: Options = Options(),
+        constraints: CompressionConstraints,
+    ): Flow<Progress> = compressionFlow(context, source, options, constraints)
 
     private suspend fun internalCompressToFile(
         context: Context,
@@ -145,6 +197,7 @@ public object ImageCompressor {
         options: Options,
         progress: ProgressEmitter?,
         includeSourceSize: Boolean = false,
+        constraints: CompressionConstraints? = null,
     ): CompressionResult {
         validateOptions(options)
         val inputBytes = if (includeSourceSize) sourceByteCount(context, source) else null
@@ -158,7 +211,7 @@ public object ImageCompressor {
             val stagingFile = File.createTempFile(".tinycompressor-", ".tmp", parent)
             try {
                 progress?.emit(Step.Resizing, 55)
-                val encoded = encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, progress)
+                val encoded = encodeBitmap(context, source, decoded.bitmap, options, format, stagingFile, progress, constraints)
                 progress?.emit(Step.Writing, 95)
                 currentCoroutineContext().ensureActive()
                 val outputBytes = stagingFile.length()
@@ -372,8 +425,20 @@ public object ImageCompressor {
         format: CompressFormat,
         stagingFile: File?,
         progress: ProgressEmitter?,
+        constraints: CompressionConstraints? = null,
     ): EncodedImage {
         val androidFormat = format.toAndroid(options.quality.coerceIn(0, 100))
+        if (constraints != null) {
+            require(!format.isLossy() || constraints.minQuality <= options.quality.coerceIn(0, 100)) {
+                "minQuality must not exceed the requested quality"
+            }
+            if (bitmap.width < constraints.minWidth || bitmap.height < constraints.minHeight) {
+                throw IOException("Image is smaller than the minimum ${constraints.minWidth}x${constraints.minHeight} dimensions")
+            }
+            if (options.maxBytes != null) {
+                return encodeWithConstraints(context, source, bitmap, options, format, stagingFile, progress, constraints)
+            }
+        }
         progress?.emit(Step.Encoding, 70)
         currentCoroutineContext().ensureActive()
 
@@ -445,6 +510,83 @@ public object ImageCompressor {
                 }
             }
             throw IOException("Cannot compress image to $maxBytes bytes within 128 attempts")
+        } finally {
+            if (current !== bitmap) current.recycle()
+        }
+    }
+
+    private suspend fun encodeWithConstraints(
+        context: Context,
+        source: Source,
+        bitmap: Bitmap,
+        options: Options,
+        format: CompressFormat,
+        stagingFile: File?,
+        progress: ProgressEmitter?,
+        constraints: CompressionConstraints,
+    ): EncodedImage {
+        val limit = requireNotNull(options.maxBytes)
+        val ceiling = options.quality.coerceIn(0, 100)
+        val minimumScale = max(constraints.minWidth.toDouble() / bitmap.width, constraints.minHeight.toDouble() / bitmap.height)
+        var current = bitmap
+        var scale = 1.0
+
+        suspend fun attempt(quality: Int): Pair<EncodedImage, Long> {
+            currentCoroutineContext().ensureActive()
+            val output = ByteArrayOutputStream()
+            if (!current.compress(format.toAndroid(quality), quality, output)) throw IOException("Bitmap encoder failed")
+            val bytes =
+                if (stagingFile == null) {
+                    output.toByteArray()
+                } else {
+                    BufferedOutputStream(FileOutputStream(stagingFile)).use { output.writeTo(it) }
+                    if (options.keepExif && format == CompressFormat.JPEG) copyExif(context, source, stagingFile)
+                    null
+                }
+            currentCoroutineContext().ensureActive()
+            return EncodedImage(bytes, current.width, current.height, quality.takeIf { format.isLossy() }) to
+                (bytes?.size?.toLong() ?: requireNotNull(stagingFile).length())
+        }
+
+        try {
+            repeat(32) { iteration ->
+                progress?.emit(Step.Encoding, 70 + min(iteration, 20))
+                val requested = attempt(ceiling)
+                if (requested.second <= limit) return requested.first
+                var smallestBytes = requested.second
+                if (format.isLossy() && constraints.minQuality < ceiling) {
+                    var low = constraints.minQuality
+                    var high = ceiling - 1
+                    var bestQuality: Int? = null
+                    while (low <= high) {
+                        val quality = low + (high - low) / 2
+                        val candidate = attempt(quality)
+                        smallestBytes = min(smallestBytes, candidate.second)
+                        if (candidate.second <= limit) {
+                            bestQuality = quality
+                            low = quality + 1
+                        } else {
+                            high = quality - 1
+                        }
+                    }
+                    if (bestQuality != null) {
+                        // Later probes may overwrite the staging file. Restore and check the selected result.
+                        val selected = attempt(bestQuality)
+                        if (selected.second <= limit) return selected.first
+                    }
+                }
+                val nextScale = max(minimumScale, scale * sqrt(limit.toDouble() / smallestBytes).coerceIn(0.5, 0.9))
+                val nextWidth = max(constraints.minWidth, (bitmap.width * nextScale).roundToInt())
+                val nextHeight = max(constraints.minHeight, (bitmap.height * nextScale).roundToInt())
+                if (nextWidth >= current.width && nextHeight >= current.height) {
+                    throw IOException("Cannot fit $limit bytes at the minimum quality and dimensions")
+                }
+                val next = Bitmap.createScaledBitmap(bitmap, nextWidth, nextHeight, true)
+                if (current !== bitmap) current.recycle()
+                current = next
+                scale = nextScale
+            }
+            throw IOException("Cannot fit $limit bytes within 32 dimension adjustments")
         } finally {
             if (current !== bitmap) current.recycle()
         }

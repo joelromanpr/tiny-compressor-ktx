@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+- Make upload-recipe cleanup safe when cancellation, completion observers, and reconciliation remove the same directory concurrently.
+- Add regression coverage for concurrent removal and already-removed paths.
+
 ## 1.2.0 — 2026-11-11
 
 - Support Android 9 (API 28) and newer, using the older platform WebP encoder before API 30.

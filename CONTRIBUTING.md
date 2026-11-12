@@ -17,6 +17,12 @@ This checks Spotless formatting, library debug unit tests, and the demo debug bu
 
 Device behavior such as EXIF orientation and output decoding needs an Android device or emulator check in addition to JVM tests. Note the tested API level in the pull request.
 
+## Find a focused contribution
+
+See [ROADMAP.md](ROADMAP.md) for small, concrete contribution ideas. The issue forms ask for the details needed to reproduce image problems. Use a redistributable fixture or generator and strip private metadata before sharing it.
+
+The [upload recipes](docs/uploads.md) live under the demo and compile with `:demo:assembleDebug`. Their device tests run with `:demo:connectedDebugAndroidTest`. Keep optional integration dependencies in the demo instead of adding them to the core artifact.
+
 ## Commit messages and versions
 
 [Conventional Commits](https://www.conventionalcommits.org/) help readers follow changes. Examples:

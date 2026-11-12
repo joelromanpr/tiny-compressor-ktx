@@ -22,3 +22,11 @@ dependencyResolutionManagement {
 rootProject.name = "demo"
 include(":demo")
 include(":lib")
+
+if (providers.gradleProperty("includeBenchmarks").orNull == "true") {
+    include(":benchmark")
+}
+
+if (providers.gradleProperty("includeFootprint").orNull == "true") {
+    include(":footprint")
+}

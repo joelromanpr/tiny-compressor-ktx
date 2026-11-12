@@ -1,0 +1,35 @@
+{
+  "libraryBaseRevision": "9be0f6176ea5d53f4c9b6283505fa809ab19196d",
+  "benchmarkMeasuredRevision": "cf7b53fa3dd4341135673e91aef3ed898ade3f0e",
+  "footprintMeasuredRevision": "94b01827126bc628856e4600a9b4f121e362f62f",
+  "compressionSources": {
+    "benchmark/build.gradle.kts": "da7dabf35cda7e80776c55db1996f118c0a8c5eaa8c64cd851258ab9cdcd5f1f",
+    "benchmark/src/androidTest/kotlin/com/joelromanpr/tinycompressor/benchmark/CompressionBenchmark.kt": "4fc654c453f5d549523032816e8b5cb2f60a0b49549603ab359f0009fddb69db",
+    "benchmark/src/main/AndroidManifest.xml": "4f9037d43027ccce7c25ba96e9c271c12c2a76cfc8f72977bc05230f858b5a03",
+    "benchmark/src/main/assets/earth-apollo17.jpg": "cb4c3d2da98ee72130ebfd2ea472fc84ede6726002c2a8c9cabd86e4deea9f0f",
+    "build.gradle.kts": "b7f126f22ec5392d3d103bf4bc54710fbd685fa0d82343b66b50b1cbe03998ec",
+    "gradle.properties": "55d5f56f4bef62196df09b0c4cbbaca9af3f1ba49196babbc9bcd7590c2047e2",
+    "gradle/libs.versions.toml": "b4ee6e2db2ff142cf1608287f03d3aa2d42f0aff33c99cdb4c89d723d10a6e8d",
+    "gradle/wrapper/gradle-wrapper.properties": "b55a8ac0d14bd15de8d50d7349a1be80de92be81548b0e3903bef04189d0e8fa",
+    "lib/build.gradle.kts": "ce00c1e1800f0975dd192e17861bd15d414a1a9d18c68f1898878918790743c1",
+    "lib/src/main/AndroidManifest.xml": "90eb357f4f0623549d6fea1b73af0530034379180134f30ffab39760446bf645",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/ColorSpace.kt": "b0a89f39afcd165f0ff9bf076014ecb8a9d282961380da0c0f036f37ae6cddd3",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/CompressFormat.kt": "a3104f8d576077425c1dacef5c729e5b54c005a1ccbf25832e6c33f9aba63600",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/Destination.kt": "0bd52b1c09794b646db2d0520be8699b9cc9aaf1b2a27f98940065aa49bf8dbb",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/ImageCompressor.kt": "ede3b087502f3a76cbd63c5848cfc30f23294cd0b55b5a47933c317c33379ec9",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/Options.kt": "15820c9d3bafe6da318df316a3677d3559ebc4f219a12c9b3c911793d3d25e76",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/Progress.kt": "f10067eec556bf8876e5b1225a8ac652bcdcf1763b9841e4f43bdd5881a25d31",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/Source.kt": "c1e80e064a28604daacbb77eff0ce4aa4efb3ca8597c39eeb33eb4b6751c158b",
+    "lib/src/main/kotlin/com/joelromanpr/tinycompressor/Step.kt": "155360b4edf3cdb226602ee2c3af56e915ba8e5eed92150d40eb3f3817219d99",
+    "scripts/run_benchmarks.sh": "65cdaf1d8fb1de2548f39ee716a00809f03811381d358313b42f120b729ae34b",
+    "scripts/summarize_benchmarks.py": "ea70867e2c94a441cafc4cf13764968affd40f4b7d871b83212794825f345362",
+    "settings.gradle.kts": "232d77204f06b1baeac9cc6b5ee6d66bb56c9f3af004dbe606a7f52d7dd4be65"
+  },
+  "footprintSources": {
+    "footprint/build.gradle.kts": "0a2d301a4c973578b4b4c2af687099ecc1e15de6649f782d3e445ce5f17eccdf",
+    "footprint/src/main/AndroidManifest.xml": "4596bf54734d557b78f99123e9654f0c0def53653d77cab06760199f40388c9c",
+    "footprint/src/main/kotlin/com/joelromanpr/tinycompressor/footprint/MainActivity.kt": "463e2647a75e5d69c3e598c5c540d6388e5f20673adc9688b78e1409017c8f4e",
+    "scripts/measure_dependency_footprint.sh": "c1abc6ed8d34b2c80f736fdae9d21cb35ceca9dc178ba337570998f0a7dc2871",
+    "scripts/measure_footprint.py": "c7dfc090a931d1674f95ec2a47fbaa63f9a3dca29133e0124d2395fcc76efe7f"
+  }
+}

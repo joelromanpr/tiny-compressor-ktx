@@ -77,7 +77,7 @@ class UploadQueueTest {
             } finally {
                 id?.let {
                     manager.cancelWorkById(it).result.get()
-                    uploadInputDirectory(context, it).deleteRecursively()
+                    removeOwnedDirectory(uploadInputDirectory(context, it))
                 }
                 scope.cancel()
                 source.delete()
@@ -104,7 +104,7 @@ class UploadQueueTest {
             } finally {
                 id?.let {
                     manager.cancelWorkById(it).result.get()
-                    uploadInputDirectory(context, it).deleteRecursively()
+                    removeOwnedDirectory(uploadInputDirectory(context, it))
                 }
                 scope.cancel()
                 source.delete()

@@ -78,6 +78,6 @@ suspend fun uploadPickedImage(
     } finally {
         // A caller can be cancelled while a suspend compression hands back its result. Knowing the
         // destination in advance lets us remove that output even if the result was never delivered.
-        withContext(NonCancellable + Dispatchers.IO) { directory.deleteRecursively() }
+        withContext(NonCancellable + Dispatchers.IO) { removeOwnedDirectory(directory) }
     }
 }

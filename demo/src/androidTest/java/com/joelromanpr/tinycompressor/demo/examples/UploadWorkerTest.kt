@@ -61,7 +61,7 @@ class UploadWorkerTest {
                 assertTrue(input.exists())
                 assertNoAttemptOutput(worker)
             } finally {
-                input.parentFile?.deleteRecursively()
+                input.parentFile?.let(::removeOwnedDirectory)
             }
         }
 
@@ -80,8 +80,8 @@ class UploadWorkerTest {
                 assertNoAttemptOutput(first)
                 assertNoAttemptOutput(final)
             } finally {
-                firstInput.parentFile?.deleteRecursively()
-                finalInput.parentFile?.deleteRecursively()
+                firstInput.parentFile?.let(::removeOwnedDirectory)
+                finalInput.parentFile?.let(::removeOwnedDirectory)
             }
         }
 
@@ -102,8 +102,8 @@ class UploadWorkerTest {
                 assertNoAttemptOutput(invalid)
                 assertNoAttemptOutput(rejected)
             } finally {
-                invalidInput.parentFile?.deleteRecursively()
-                rejectedInput.parentFile?.deleteRecursively()
+                invalidInput.parentFile?.let(::removeOwnedDirectory)
+                rejectedInput.parentFile?.let(::removeOwnedDirectory)
             }
         }
 
@@ -127,7 +127,7 @@ class UploadWorkerTest {
                 assertTrue(input.exists())
                 assertNoAttemptOutput(worker)
             } finally {
-                input.parentFile?.deleteRecursively()
+                input.parentFile?.let(::removeOwnedDirectory)
             }
         }
 

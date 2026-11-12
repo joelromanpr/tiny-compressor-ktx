@@ -96,7 +96,7 @@ class UploadQueue(
             if (handedOver) withContext(NonCancellable) { cancel(id) }
             throw cancelled
         } finally {
-            if (!handedOver) withContext(NonCancellable + Dispatchers.IO) { directory.deleteRecursively() }
+            if (!handedOver) withContext(NonCancellable + Dispatchers.IO) { removeOwnedDirectory(directory) }
         }
     }
 
@@ -105,14 +105,14 @@ class UploadQueue(
         withContext(Dispatchers.IO) {
             workManager.cancelWorkById(id).result.get()
             val info = workManager.getWorkInfoByIdFlow(id).first()
-            if (info?.state?.isFinished == true) uploadInputDirectory(context, id).deleteRecursively()
+            if (info?.state?.isFinished == true) removeOwnedDirectory(uploadInputDirectory(context, id))
         }
     }
 
     private fun observeTerminalState(id: UUID) {
         applicationScope.launch(Dispatchers.IO) {
             workManager.getWorkInfoByIdFlow(id).filterNotNull().first { it.state.isFinished }
-            uploadInputDirectory(context, id).deleteRecursively()
+            removeOwnedDirectory(uploadInputDirectory(context, id))
         }
     }
 
@@ -122,11 +122,11 @@ class UploadQueue(
             val id = runCatching { UUID.fromString(directory.name) }.getOrNull() ?: return@forEach
             val info = workManager.getWorkInfoByIdFlow(id).first()
             when {
-                info?.state?.isFinished == true -> directory.deleteRecursively()
+                info?.state?.isFinished == true -> removeOwnedDirectory(directory)
                 info != null -> observeTerminalState(id)
                 // A crash before enqueue can strand a copy. Leave fresh copies alone because an
                 // enqueue operation in this process may still be preparing one of them.
-                System.currentTimeMillis() - directory.lastModified() > TimeUnit.DAYS.toMillis(1) -> directory.deleteRecursively()
+                System.currentTimeMillis() - directory.lastModified() > TimeUnit.DAYS.toMillis(1) -> removeOwnedDirectory(directory)
             }
         }
     }

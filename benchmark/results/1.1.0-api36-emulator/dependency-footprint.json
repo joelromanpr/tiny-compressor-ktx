@@ -1,0 +1,24 @@
+{
+  "revision": "94b01827126bc628856e4600a9b4f121e362f62f",
+  "libraryVersion": "1.1.0",
+  "measurementKind": "unshrunk-dependency-only-apk",
+  "aar": "lib/build/outputs/aar/lib-release.aar",
+  "aarBytes": 47096,
+  "classesJarBytes": 50089,
+  "uncompressedClassBytes": 106611,
+  "packagedNativeLibraries": [],
+  "apk": "footprint/build/outputs/apk/withCompressor/release/footprint-withCompressor-release-unsigned.apk",
+  "apkBytes": 3227453,
+  "notes": [
+    "AAR sizes exclude transitive dependencies.",
+    "APK bytes describe the whole supplied app, not an incremental cost by themselves.",
+    "APK size is not installed size or Play download size.",
+    "A delta is meaningful only with identical app sources, assets, shrinker settings, toolchain, and build variant except library integration.",
+    "The two minimal-app release flavors share Activity source, assets, application ID, SDK settings, and build options; only withCompressor declares the library dependency.",
+    "The delta includes transitive dependencies without shrinking. Existing apps may already share them; this is not the cost after R8 optimization."
+  ],
+  "baselineApk": "footprint/build/outputs/apk/baseline/release/footprint-baseline-release-unsigned.apk",
+  "baselineApkBytes": 2036341,
+  "apkDeltaBytes": 1191112,
+  "shrinkingEnabled": false
+}

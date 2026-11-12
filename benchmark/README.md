@@ -37,7 +37,7 @@ Quality is RGB PSNR against an sRGB decode of the source resized to that output'
 
 Memory is measured during a separate additional compression after timing. Android `Debug.MemoryInfo.totalPss` is sampled before/after and about every 25 ms while the call runs. The report labels the maximum `observedProcessPssMaxKiB`: it includes the whole process, runtime, caches, shared pages, and earlier allocations; it can miss short-lived peaks. It is not a per-operation allocation count, leak detector, or guaranteed peak bitmap memory. Sampling itself has overhead and is deliberately kept out of timed runs.
 
-No benchmark results are included until a run has been saved with its device details and revision. Do not describe a library as faster, smaller, or visually equivalent based only on its API or these fixtures.
+An archived [1.1.0 emulator baseline](results/1.1.0-api36-emulator/README.md) includes raw samples, device details, revisions, and measured dependency footprint. It validates the harness; emulator timings do not establish phone performance. Do not describe a library as faster, smaller, or visually equivalent based only on its API or these fixtures.
 
 ## Artifact and app footprint
 

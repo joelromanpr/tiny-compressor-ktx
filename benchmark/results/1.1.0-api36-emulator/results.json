@@ -1,0 +1,721 @@
+{
+  "schemaVersion": 1,
+  "revision": "cf7b53fa3dd4341135673e91aef3ed898ade3f0e",
+  "libraryVersion": "1.1.0",
+  "device": {
+    "manufacturer": "Google",
+    "model": "sdk_gphone64_arm64",
+    "api": 36,
+    "fingerprint": "google\/sdk_gphone64_arm64\/emu64a:16\/BE2A.250530.026.F3\/13894323:userdebug\/dev-keys",
+    "abis": [
+      "arm64-v8a"
+    ]
+  },
+  "iterations": 5,
+  "warmups": 2,
+  "buildType": "debug",
+  "results": [
+    {
+      "fixture": "earth-photo",
+      "inputSha256": "cb4c3d2da98ee72130ebfd2ea472fc84ede6726002c2a8c9cabd86e4deea9f0f",
+      "inputBytes": 1915552,
+      "engine": "platform-fixed",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 188643,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/jpeg",
+      "targetMet": null,
+      "durationMs": [
+        55.669667,
+        58.535084,
+        56.18575,
+        56.888041,
+        55.657625
+      ],
+      "medianMs": 56.18575,
+      "p90Ms": 58.535084,
+      "memory": {
+        "processPssBeforeKiB": 65045,
+        "processPssAfterKiB": 65074,
+        "observedProcessPssMaxKiB": 72079,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 36.79036906371367,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "earth-photo",
+      "inputSha256": "cb4c3d2da98ee72130ebfd2ea472fc84ede6726002c2a8c9cabd86e4deea9f0f",
+      "inputBytes": 1915552,
+      "engine": "library-fixed",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 188643,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/jpeg",
+      "targetMet": null,
+      "durationMs": [
+        57.183167,
+        57.668083,
+        57.478,
+        56.907375,
+        57.503875
+      ],
+      "medianMs": 57.478,
+      "p90Ms": 57.668083,
+      "memory": {
+        "processPssBeforeKiB": 114018,
+        "processPssAfterKiB": 114054,
+        "observedProcessPssMaxKiB": 121374,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 36.79036906371367,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "earth-photo",
+      "inputSha256": "cb4c3d2da98ee72130ebfd2ea472fc84ede6726002c2a8c9cabd86e4deea9f0f",
+      "inputBytes": 1915552,
+      "engine": "library-100kb",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": 100000,
+      "outputBytes": 91932,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/jpeg",
+      "targetMet": true,
+      "durationMs": [
+        92.722875,
+        83.640583,
+        84.604333,
+        85.489042,
+        85.13875
+      ],
+      "medianMs": 85.13875,
+      "p90Ms": 92.722875,
+      "memory": {
+        "processPssBeforeKiB": 44445,
+        "processPssAfterKiB": 43441,
+        "observedProcessPssMaxKiB": 53033,
+        "sampleIntervalMs": 25,
+        "samples": 5
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 32.46810816242072,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "earth-webp",
+      "inputSha256": "cb4c3d2da98ee72130ebfd2ea472fc84ede6726002c2a8c9cabd86e4deea9f0f",
+      "inputBytes": 1915552,
+      "engine": "platform-fixed",
+      "requestedFormat": "WEBP",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 142210,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/webp",
+      "targetMet": null,
+      "durationMs": [
+        127.952,
+        128.147084,
+        129.307167,
+        128.922292,
+        129.314417
+      ],
+      "medianMs": 128.922292,
+      "p90Ms": 129.314417,
+      "memory": {
+        "processPssBeforeKiB": 43265,
+        "processPssAfterKiB": 42985,
+        "observedProcessPssMaxKiB": 54561,
+        "sampleIntervalMs": 25,
+        "samples": 6
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 37.46174265531002,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "earth-webp",
+      "inputSha256": "cb4c3d2da98ee72130ebfd2ea472fc84ede6726002c2a8c9cabd86e4deea9f0f",
+      "inputBytes": 1915552,
+      "engine": "library-fixed",
+      "requestedFormat": "WEBP",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 142210,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/webp",
+      "targetMet": null,
+      "durationMs": [
+        196.005458,
+        132.471583,
+        164.115042,
+        128.955876,
+        131.135667
+      ],
+      "medianMs": 132.471583,
+      "p90Ms": 196.005458,
+      "memory": {
+        "processPssBeforeKiB": 43013,
+        "processPssAfterKiB": 43093,
+        "observedProcessPssMaxKiB": 54649,
+        "sampleIntervalMs": 25,
+        "samples": 7
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 37.46174265531002,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "earth-webp",
+      "inputSha256": "cb4c3d2da98ee72130ebfd2ea472fc84ede6726002c2a8c9cabd86e4deea9f0f",
+      "inputBytes": 1915552,
+      "engine": "library-100kb",
+      "requestedFormat": "WEBP",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": 100000,
+      "outputBytes": 89564,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/webp",
+      "targetMet": true,
+      "durationMs": [
+        278.818417,
+        277.887917,
+        280.05425,
+        284.695959,
+        282.860666
+      ],
+      "medianMs": 280.05425,
+      "p90Ms": 284.695959,
+      "memory": {
+        "processPssBeforeKiB": 43581,
+        "processPssAfterKiB": 43157,
+        "observedProcessPssMaxKiB": 58341,
+        "sampleIntervalMs": 25,
+        "samples": 11
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 34.48163921802624,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "screenshot",
+      "inputSha256": "4dcddf55c4af4e1bf8afc2c722cab5d7e9d3d4c2925ad2b473e52c188297edad",
+      "inputBytes": 69745,
+      "engine": "platform-fixed",
+      "requestedFormat": "PNG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 23906,
+      "outputWidth": 720,
+      "outputHeight": 1280,
+      "outputMime": "image\/png",
+      "targetMet": null,
+      "durationMs": [
+        52.641458,
+        52.935167,
+        53.342875,
+        51.187458,
+        51.744208
+      ],
+      "medianMs": 52.641458,
+      "p90Ms": 53.342875,
+      "memory": {
+        "processPssBeforeKiB": 43464,
+        "processPssAfterKiB": 43184,
+        "observedProcessPssMaxKiB": 46948,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": null,
+        "identicalRgbOverWhite": true,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 720,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "screenshot",
+      "inputSha256": "4dcddf55c4af4e1bf8afc2c722cab5d7e9d3d4c2925ad2b473e52c188297edad",
+      "inputBytes": 69745,
+      "engine": "library-fixed",
+      "requestedFormat": "PNG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 23906,
+      "outputWidth": 720,
+      "outputHeight": 1280,
+      "outputMime": "image\/png",
+      "targetMet": null,
+      "durationMs": [
+        53.559084,
+        52.68425,
+        52.630583,
+        52.507167,
+        52.106166
+      ],
+      "medianMs": 52.630583,
+      "p90Ms": 53.559084,
+      "memory": {
+        "processPssBeforeKiB": 43320,
+        "processPssAfterKiB": 43348,
+        "observedProcessPssMaxKiB": 47100,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": null,
+        "identicalRgbOverWhite": true,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 720,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "screenshot",
+      "inputSha256": "4dcddf55c4af4e1bf8afc2c722cab5d7e9d3d4c2925ad2b473e52c188297edad",
+      "inputBytes": 69745,
+      "engine": "library-100kb",
+      "requestedFormat": "PNG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": 100000,
+      "outputBytes": 23906,
+      "outputWidth": 720,
+      "outputHeight": 1280,
+      "outputMime": "image\/png",
+      "targetMet": true,
+      "durationMs": [
+        53.610875,
+        54.870166,
+        54.291042,
+        53.9585,
+        53.900459
+      ],
+      "medianMs": 53.9585,
+      "p90Ms": 54.870166,
+      "memory": {
+        "processPssBeforeKiB": 43344,
+        "processPssAfterKiB": 43408,
+        "observedProcessPssMaxKiB": 47120,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": null,
+        "identicalRgbOverWhite": true,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 720,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "transparent",
+      "inputSha256": "a2174d3a343e67587fd47a178bfe10382907eb3b00b906df24df200bd195f2d3",
+      "inputBytes": 92631,
+      "engine": "platform-fixed",
+      "requestedFormat": "PNG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 74608,
+      "outputWidth": 1280,
+      "outputHeight": 853,
+      "outputMime": "image\/png",
+      "targetMet": null,
+      "durationMs": [
+        56.350042,
+        55.770959,
+        57.089959,
+        56.6425,
+        56.07725
+      ],
+      "medianMs": 56.350042,
+      "p90Ms": 57.089959,
+      "memory": {
+        "processPssBeforeKiB": 43272,
+        "processPssAfterKiB": 43300,
+        "observedProcessPssMaxKiB": 47752,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": null,
+        "identicalRgbOverWhite": true,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 853
+      }
+    },
+    {
+      "fixture": "transparent",
+      "inputSha256": "a2174d3a343e67587fd47a178bfe10382907eb3b00b906df24df200bd195f2d3",
+      "inputBytes": 92631,
+      "engine": "library-fixed",
+      "requestedFormat": "PNG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 74608,
+      "outputWidth": 1280,
+      "outputHeight": 853,
+      "outputMime": "image\/png",
+      "targetMet": null,
+      "durationMs": [
+        57.1755,
+        57.181708,
+        59.05075,
+        60.529834,
+        58.228542
+      ],
+      "medianMs": 58.228542,
+      "p90Ms": 60.529834,
+      "memory": {
+        "processPssBeforeKiB": 43816,
+        "processPssAfterKiB": 43312,
+        "observedProcessPssMaxKiB": 47740,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": null,
+        "identicalRgbOverWhite": true,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 853
+      }
+    },
+    {
+      "fixture": "transparent",
+      "inputSha256": "a2174d3a343e67587fd47a178bfe10382907eb3b00b906df24df200bd195f2d3",
+      "inputBytes": 92631,
+      "engine": "library-100kb",
+      "requestedFormat": "PNG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": 100000,
+      "outputBytes": 74608,
+      "outputWidth": 1280,
+      "outputHeight": 853,
+      "outputMime": "image\/png",
+      "targetMet": true,
+      "durationMs": [
+        56.782333,
+        57.381666,
+        57.845416,
+        58.112958,
+        58.174
+      ],
+      "medianMs": 57.845416,
+      "p90Ms": 58.174,
+      "memory": {
+        "processPssBeforeKiB": 43368,
+        "processPssAfterKiB": 43608,
+        "observedProcessPssMaxKiB": 47828,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": null,
+        "identicalRgbOverWhite": true,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 853
+      }
+    },
+    {
+      "fixture": "panorama",
+      "inputSha256": "4af99fb45207353de02bb0ab1615dd349ed39dbafa6fdcaa81e075840b75b1d8",
+      "inputBytes": 176072,
+      "engine": "platform-fixed",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 14971,
+      "outputWidth": 1280,
+      "outputHeight": 128,
+      "outputMime": "image\/jpeg",
+      "targetMet": null,
+      "durationMs": [
+        4.581084,
+        4.57225,
+        4.342125,
+        4.748625,
+        4.808417
+      ],
+      "medianMs": 4.581084,
+      "p90Ms": 4.808417,
+      "memory": {
+        "processPssBeforeKiB": 43336,
+        "processPssAfterKiB": 43340,
+        "observedProcessPssMaxKiB": 44248,
+        "sampleIntervalMs": 25,
+        "samples": 3
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 34.77665151367129,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 128
+      }
+    },
+    {
+      "fixture": "panorama",
+      "inputSha256": "4af99fb45207353de02bb0ab1615dd349ed39dbafa6fdcaa81e075840b75b1d8",
+      "inputBytes": 176072,
+      "engine": "library-fixed",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 14971,
+      "outputWidth": 1280,
+      "outputHeight": 128,
+      "outputMime": "image\/jpeg",
+      "targetMet": null,
+      "durationMs": [
+        4.812709,
+        5.027041,
+        4.95375,
+        4.781292,
+        5.078875
+      ],
+      "medianMs": 4.95375,
+      "p90Ms": 5.078875,
+      "memory": {
+        "processPssBeforeKiB": 43372,
+        "processPssAfterKiB": 43400,
+        "observedProcessPssMaxKiB": 44456,
+        "sampleIntervalMs": 25,
+        "samples": 3
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 34.77665151367129,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 128
+      }
+    },
+    {
+      "fixture": "panorama",
+      "inputSha256": "4af99fb45207353de02bb0ab1615dd349ed39dbafa6fdcaa81e075840b75b1d8",
+      "inputBytes": 176072,
+      "engine": "library-100kb",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": 100000,
+      "outputBytes": 14971,
+      "outputWidth": 1280,
+      "outputHeight": 128,
+      "outputMime": "image\/jpeg",
+      "targetMet": true,
+      "durationMs": [
+        5.291375,
+        5.009,
+        4.978459,
+        5.056833,
+        5.167291
+      ],
+      "medianMs": 5.056833,
+      "p90Ms": 5.291375,
+      "memory": {
+        "processPssBeforeKiB": 43604,
+        "processPssAfterKiB": 43668,
+        "observedProcessPssMaxKiB": 44848,
+        "sampleIntervalMs": 25,
+        "samples": 3
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 34.77665151367129,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 128
+      }
+    },
+    {
+      "fixture": "rotated-photo",
+      "inputSha256": "1cdc4a6b0f2decd3baa714a59fded164beb9f9ac2b09a74ae0b4fde6b1ab859c",
+      "inputBytes": 1915578,
+      "engine": "platform-fixed",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 188808,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/jpeg",
+      "targetMet": null,
+      "durationMs": [
+        62.2445,
+        59.901542,
+        60.600208,
+        62.87875,
+        64.548958
+      ],
+      "medianMs": 62.2445,
+      "p90Ms": 64.548958,
+      "memory": {
+        "processPssBeforeKiB": 43436,
+        "processPssAfterKiB": 43340,
+        "observedProcessPssMaxKiB": 50628,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 36.79753100636078,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "rotated-photo",
+      "inputSha256": "1cdc4a6b0f2decd3baa714a59fded164beb9f9ac2b09a74ae0b4fde6b1ab859c",
+      "inputBytes": 1915578,
+      "engine": "library-fixed",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": null,
+      "outputBytes": 188808,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/jpeg",
+      "targetMet": null,
+      "durationMs": [
+        65.0345,
+        63.401375,
+        66.066917,
+        64.749959,
+        64.421333
+      ],
+      "medianMs": 64.749959,
+      "p90Ms": 66.066917,
+      "memory": {
+        "processPssBeforeKiB": 43404,
+        "processPssAfterKiB": 43436,
+        "observedProcessPssMaxKiB": 51360,
+        "sampleIntervalMs": 25,
+        "samples": 4
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 36.79753100636078,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    },
+    {
+      "fixture": "rotated-photo",
+      "inputSha256": "1cdc4a6b0f2decd3baa714a59fded164beb9f9ac2b09a74ae0b4fde6b1ab859c",
+      "inputBytes": 1915578,
+      "engine": "library-100kb",
+      "requestedFormat": "JPEG",
+      "requestedQuality": 80,
+      "maxWidth": 1280,
+      "maxHeight": 1280,
+      "maxBytes": 100000,
+      "outputBytes": 92122,
+      "outputWidth": 1280,
+      "outputHeight": 1280,
+      "outputMime": "image\/jpeg",
+      "targetMet": true,
+      "durationMs": [
+        93.508834,
+        94.965208,
+        92.211167,
+        91.623208,
+        93.123666
+      ],
+      "medianMs": 93.123666,
+      "p90Ms": 94.965208,
+      "memory": {
+        "processPssBeforeKiB": 43641,
+        "processPssAfterKiB": 43641,
+        "observedProcessPssMaxKiB": 52701,
+        "sampleIntervalMs": 25,
+        "samples": 5
+      },
+      "quality": {
+        "rgbPsnrDbOverWhite": 32.46301719993752,
+        "identicalRgbOverWhite": false,
+        "alphaMeanAbsoluteError": 0,
+        "referenceWidth": 1280,
+        "referenceHeight": 1280
+      }
+    }
+  ]
+}

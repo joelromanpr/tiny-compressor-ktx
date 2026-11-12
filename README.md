@@ -1,141 +1,165 @@
 # Tiny Compressor KTX
 
-Android image compression with a small Kotlin API. Resize and encode images from a `File`, content `Uri`, or `ByteArray`; receive a file, bytes, or progress events from a `Flow`.
+Prepare Android images for upload with Kotlin coroutines. Set a file-size limit, omit source EXIF, and get the output file with its actual dimensions, format, and size. Supports **Android 9+ (API 28)**, JPEG, PNG, and WebP.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.joelromanpr/tiny-compressor-ktx.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.joelromanpr/tiny-compressor-ktx)
+[![Build](https://github.com/joelromanpr/tiny-compressor-ktx/actions/workflows/build_test_publish.yml/badge.svg?branch=main)](https://github.com/joelromanpr/tiny-compressor-ktx/actions/workflows/build_test_publish.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-- **Android 11+ (`minSdk 30`)**
-- **Kotlin coroutines:** suspending calls for file and byte output; a `Flow` for coarse progress
-- **JPEG, PNG, and WebP:** bounded dimensions, configurable quality, and an optional strict byte limit
-- **Private by choice:** retain a supported subset of JPEG EXIF or opt out for uploads
+```kotlin
+val result = ImageCompressor.compressWithResult(
+    context,
+    Source.Uri(pickedImage),
+    Options.forUpload(maxBytes = 500_000),
+)
+// Pass result.file and result.mimeType to your upload client.
+```
+
+A successful call fits the complete output within 500,000 bytes. If the target cannot be met, it throws `IOException`.
+
+<img src="docs/assets/demo.gif" alt="Demo compressing an image to a size target and comparing the result" width="320" />
+
+Recorded from the real demo on an emulator. Sample photograph: NASA/Apollo 17 crew ([source and usage](benchmark/SOURCES.md)). Times shown belong to that emulator.
 
 ## Install
 
-Add Maven Central to your app's repositories (alongside Google's Android repository):
-
-```kotlin
-// settings.gradle.kts
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-```
-
-Then add the dependency:
+Add `google()` and `mavenCentral()` to your dependency repositories, then:
 
 ```kotlin
 // app/build.gradle.kts
 dependencies {
-    implementation("io.github.joelromanpr:tiny-compressor-ktx:1.1.0")
+    implementation("io.github.joelromanpr:tiny-compressor-ktx:1.2.1")
 }
 ```
 
-See the [v1.1.0 release notes](https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.1.0) for the changes in this version.
+[Release notes](https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.2.1) · [Try the demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.1/tiny-compressor-demo.apk) · [Publication checks](artifacts/releases/1.2.1/verification.json)
 
-## Compress an image
+## Prepare an image
 
-Call from a coroutine. Android's Photo Picker gives your app a readable content `Uri` without requesting broad media access.
+Call suspending APIs from a coroutine. Inputs can be `Source.File`, `Source.Uri`, or `Source.Bytes`.
 
 ```kotlin
 import android.content.Context
 import android.net.Uri
+import com.joelromanpr.tinycompressor.CompressionResult
 import com.joelromanpr.tinycompressor.ImageCompressor
 import com.joelromanpr.tinycompressor.Options
 import com.joelromanpr.tinycompressor.Source
-import java.io.File
 
-suspend fun prepareUpload(context: Context, pickedImage: Uri): File =
-    ImageCompressor.compress(
-        context = context,
-        source = Source.Uri(pickedImage),
-        options = Options(
-            maxWidth = 1600,
-            maxHeight = 1600,
-            quality = 82,
-            keepExif = false, // Do not copy camera details or GPS coordinates.
-        ),
+suspend fun prepareUpload(context: Context, image: Uri): CompressionResult =
+    ImageCompressor.compressWithResult(
+        context,
+        Source.Uri(image),
+        Options.forUpload(maxBytes = 500_000),
     )
 ```
 
-The returned file is in the app's cache by default. Upload it or move it to durable app storage before the cache is cleared. You can write to a specific app-owned file with `Options(destination = Destination.File(file))`.
+`CompressionResult` reports `file`, `outputBytes`, `width`, `height`, `format`, `mimeType`, and `appliedQuality`. `inputBytes` can be null when a URI provider does not report its size. `savingsPercent` is null for unknown or empty inputs and can be negative when output grows. `appliedQuality` is null for PNG, which ignores encoder quality.
 
-## Choose the result type
+Output goes to app cache by default. Upload it, move it to durable storage, or delete it when finished. Use `options.copy(destination = Destination.File(file))` to write to an app-owned file. Existing destinations are replaced only after successful encoding and validation.
 
-| Call | Result | When to use it |
-| --- | --- | --- |
-| `ImageCompressor.compress(context, source, options)` | `File` | Save, share, or upload a file. |
-| `ImageCompressor.compressToByteArray(context, source, options)` | `ByteArray` | An API needs bytes; the entire output fits comfortably in memory. `destination` is ignored. |
-| `ImageCompressor.compressAsFlow(context, source, options)` | `Flow<Progress>` | Show approximate stage and percent updates. The final `Step.Done` event contains the file. |
+For complete Photo Picker and WorkManager examples, see the [compiled upload recipes](docs/uploads.md). Network calls and WorkManager stay in your app; the core has neither dependency. Keep URI access valid until compression finishes; for later work, persist an eligible grant or make an app-owned input copy.
 
-For example, to receive bytes without copying source EXIF:
+## Choose an API
+
+| Call | Returns |
+| --- | --- |
+| `compress(context, source, options)` | `File` |
+| `compressWithResult(context, source, options)` | `CompressionResult` |
+| `compressToByteArray(context, source, options)` | `ByteArray`; ignores `destination` |
+| `compressAsFlow(context, source, options)` | `Flow<Progress>` with approximate stage/percent updates and a final `Step.Done` containing the file |
+| `compressBatch(context, sources, options, concurrency)` | `List<BatchItemResult>` in input order |
+| `compressBatchAsFlow(context, sources, options, concurrency)` | `Flow<BatchProgress>` in completion order |
+
+Cancel work whose result is no longer needed. Coroutine cancellation propagates; let it pass through error handling.
+
+## Set quality and size limits
+
+`maxBytes` applies to the final encoded output, including any copied EXIF. It may require lower quality or smaller dimensions. Images keep their aspect ratio and are never enlarged.
+
+Use the four-argument overload when you also need minimum acceptable dimensions or an encoder-quality floor:
 
 ```kotlin
-val bytes = ImageCompressor.compressToByteArray(
+import com.joelromanpr.tinycompressor.CompressionConstraints
+
+val result = ImageCompressor.compressWithResult(
     context,
     Source.Uri(pickedImage),
-    Options(keepExif = false),
+    options = Options.forUpload(maxBytes = 300_000),
+    constraints = CompressionConstraints(
+        minQuality = 65,
+        minWidth = 640,
+        minHeight = 480,
+    ),
 )
 ```
 
-To observe progress, collect the flow in a lifecycle-aware coroutine:
+These floors apply to the oriented output. A small input is not enlarged to satisfy them; an unsatisfiable target fails. Quality values are codec parameters, not percentages of visual quality. PNG ignores quality. The constrained path searches quality within the requested bounds before reducing dimensions; calls without constraints, including batch calls, retain the existing targeting strategy. See [size-target behavior and limits](docs/size-targets.md).
+
+## Compress several images
+
+Batch compression uses a fixed number of workers, with `concurrency = 1` by default. Each item yields a success or a recoverable failure; one failed image does not stop the others.
 
 ```kotlin
-ImageCompressor.compressAsFlow(context, Source.Uri(pickedImage))
-    .collect { progress ->
-        if (progress.step.isDone()) {
-            val outputFile = requireNotNull(progress.file)
-            // Use outputFile.
-        } else {
-            // Show progress.step and progress.percent (an estimate).
-        }
+import com.joelromanpr.tinycompressor.BatchItemResult
+
+val items = ImageCompressor.compressBatch(
+    context,
+    sources = pickedImages.map { Source.Uri(it) },
+    options = Options.forUpload(maxBytes = 500_000),
+    concurrency = 2,
+)
+for (item in items) {
+    when (item) {
+        is BatchItemResult.Success -> println(item.result.file)
+        is BatchItemResult.Failure -> println("Image ${item.index}: ${item.error.message}")
     }
+}
 ```
 
-A second compression should cancel the first job if its result is no longer needed. The [demo app](demo/src/main/java/com/joelromanpr/tinycompressor/demo/MainActivity.kt) shows a picker, progress, error handling, and before/after previews.
+The returned list follows input order. For results as they finish, collect `compressBatchAsFlow`; each `BatchProgress` contains `completed`, `total`, and the `item` with its zero-based input index. Counts include failures. An empty batch emits no events.
 
-## Options and behavior
+Keep sources valid and unchanged until work finishes. A single `Destination.File` is rejected for multiple inputs. Cancellation and fatal errors abort the batch rather than becoming item failures. Generated cache files not delivered to the caller are cleaned up; files already emitted by the flow remain the caller's responsibility. The suspending list call cleans generated outputs if it cannot return the complete list. Explicit caller-owned destination files are never deleted on cancellation.
 
-| Option | Default | Notes |
+## Defaults, metadata, and formats
+
+| Setting | `Options()` | `Options.forUpload(maxBytes)` |
 | --- | --- | --- |
-| `maxWidth`, `maxHeight` | `1280` each | Preserve aspect ratio and avoid enlarging small images. |
-| `format` | `CompressFormat.JPEG` | PNG input stays PNG unless WebP is requested. See formats below. |
-| `quality` | `80` | Used for lossy JPEG/WebP. PNG encoding ignores it. |
-| `maxBytes` | `null` | When set, adaptive encoding must fit the final output within the limit or throws `IOException`. |
-| `keepExif` | `true` | For JPEG output, copies a supported subset of source EXIF, including GPS if present. Use `false` for privacy-sensitive uploads. |
-| `colorSpace` | `ColorSpace.SRGB` | `ColorSpace.DISPLAY_P3` is also available. |
-| `destination` | `Destination.Cache("default")` | File calls write under `context.cacheDir/tinycompressor/default/` unless you provide `Destination.File`. |
+| Maximum width/height | 1280 × 1280 | 1600 × 1600 |
+| Quality | 80 | 82 |
+| Byte limit | None | Required argument |
+| Copy source EXIF | `true` | `false` |
 
-### Formats and transparency
+Both use JPEG as the requested format, sRGB, and `Destination.Cache("default")`. Use `copy(...)` to adjust an upload preset. `ColorSpace.DISPLAY_P3` is also available.
 
-- **JPEG** is usually a good choice for photos. It cannot preserve transparency.
-- **PNG** preserves transparency. Its `quality` setting does not change its lossless encoding.
-- **WebP** supports transparency. At quality `100`, Android 11+ uses lossless WebP when no byte limit forces a lower quality. With `maxBytes`, adaptive encoding may switch to lossy WebP.
+The legacy `Options()` default retains selected JPEG EXIF, including camera details and GPS when present. It does not copy every metadata field. Use the upload preset or `keepExif = false` when those details are unnecessary. Decoding applies orientation to the pixels; copied JPEG orientation is normalized.
 
-The decoder identifies the input format from its content for `Source.File`, `Source.Uri`, and `Source.Bytes`. PNG input stays PNG when JPEG or PNG is requested; request WebP to convert it. For other transparent inputs, choose PNG or WebP explicitly. The cache filename extension matches the actual output format. For `Destination.File`, use an extension that matches the resolved format. A known image extension that does not match throws `IllegalArgumentException` before writing; an extensionless path is allowed.
+The decoder identifies input content rather than trusting a filename:
 
-### EXIF, limits, and errors
+- PNG input stays PNG when JPEG or PNG is requested. Request WebP to convert it.
+- PNG and WebP support transparency; JPEG does not. For other transparent inputs, explicitly choose PNG or WebP.
+- [WebP at quality 100](https://developer.android.com/reference/android/graphics/Bitmap.CompressFormat#WEBP) is lossy on API 28 and lossless on API 29+. A byte limit can select a lower quality and switch to lossy encoding.
 
-`keepExif = true` copies selected tags for JPEG output, not every metadata field. This includes camera details and GPS latitude/longitude when present. The image pixels are oriented during decode; the output orientation is normalized. Set `keepExif = false` before sharing or uploading images when source metadata is unnecessary.
+Cache extensions match the resolved format. For `Destination.File`, use a matching image extension or no extension. A known mismatched extension is rejected before writing. Read `result.mimeType` when preparing an HTTP request rather than assuming the requested format was used.
 
-`maxBytes` may reduce quality and dimensions. The limit applies to the final file, including copied EXIF. A target too small to satisfy causes an `IOException`; handle it like other input or output failures. Invalid or unreadable images and inaccessible destinations also fail with an exception. Coroutine cancellation propagates; do not convert it into a retry or a generic failure.
+## Measurements and demo
 
-### Background jobs
+The [benchmark methodology](benchmark/README.md) explains timing, memory, visual-error metrics, and footprint measurements. Recorded 1.2.0 baseline: [compression table](benchmark/results/1.2.0-api36-emulator/summary.md), [raw samples](benchmark/results/1.2.0-api36-emulator/results.json), and [dependency footprint](benchmark/results/1.2.0-api36-emulator/dependency-footprint.json). The [1.1.0 baseline](benchmark/results/1.1.0-api36-emulator/README.md) is retained separately.
 
-A picker `Uri` may not remain readable for a job that runs much later. For durable work, persist an eligible Photo Picker URI grant or copy the input to app-owned storage first. Write long-lived output to `Destination.File` instead of relying on the app cache. With WorkManager, retry only transient failures and let cancellation propagate. See Android's guidance on [persisting picker access](https://developer.android.com/training/data-storage/shared/photo-picker#persist-media-file-access) and [long-running workers](https://developer.android.com/develop/background-work/background-tasks/persistent/how-to/long-running).
+These measurements were recorded for 1.2.0. The [1.2.1 publication record](artifacts/releases/1.2.1/verification.json) verifies that the current library AAR is byte-identical to that measured build.
 
-## Run the demo and contribute
+The recorded runs use an emulator; timings do not establish physical-device performance. PSNR is compared at each output's dimensions and does not count detail lost by downscaling. Sampled process PSS is not a guaranteed peak or per-operation allocation count. The footprint comparison disables shrinking and includes transitive dependencies; it does not predict R8, installed size, or Play download size.
 
-Open this repository in Android Studio and run the `demo` configuration on Android 11 or newer. To check a change locally:
+Open the repository in Android Studio and run `demo` on Android 9 or newer, or install the [debug-signed demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.1/tiny-compressor-demo.apk). The demo includes a sample image, format/size controls, before/after comparison, and cancellation.
+
+## Contribute
 
 ```bash
 ./scripts/prepare_for_pr.sh
 ```
 
-See [CHANGELOG.md](CHANGELOG.md) for release notes and [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution and release process.
+CI checks builds, formatting, JVM tests, and Android device tests on API 28, 30, and 36. See [CONTRIBUTING.md](CONTRIBUTING.md), the [roadmap](ROADMAP.md), and [CHANGELOG.md](CHANGELOG.md). Reports with a reproducible image, options, Android version, and actual output help us fix image-specific bugs.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). The sample photograph has its own [source and usage terms](benchmark/SOURCES.md).

@@ -17,10 +17,10 @@ package com.joelromanpr.tinycompressor.demo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val Teal80 = Color(0xFF8ED5CB)
+val Slate80 = Color(0xFFB7CBC7)
+val Sand80 = Color(0xFFE8C184)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Teal40 = Color(0xFF00685E)
+val Slate40 = Color(0xFF4B635F)
+val Sand40 = Color(0xFF795A29)

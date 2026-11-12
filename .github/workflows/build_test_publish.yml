@@ -34,10 +34,20 @@ jobs:
           name: unit-test-reports
           path: '**/build/reports/tests/**'
           if-no-files-found: ignore
+      - name: Upload demo APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: demo-apk
+          path: demo/build/outputs/apk/debug/demo-debug.apk
+          if-no-files-found: error
 
   android_device_test:
-    name: Android device tests (API 30)
+    name: Android device tests (API ${{ matrix.api }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [30, 36]
     steps:
       - uses: actions/checkout@v7
         with:
@@ -57,7 +67,7 @@ jobs:
       - name: Run Android device tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 30
+          api-level: ${{ matrix.api }}
           target: google_apis
           arch: x86_64
           script: ./gradlew :lib:connectedDebugAndroidTest
@@ -65,16 +75,27 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: device-test-reports
+          name: device-test-reports-api-${{ matrix.api }}
           path: |
             lib/build/reports/androidTests/**
             lib/build/outputs/androidTest-results/**
           if-no-files-found: ignore
 
+  device_tests:
+    name: Android device tests
+    if: always()
+    needs: android_device_test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every device test job
+        env:
+          RESULT: ${{ needs.android_device_test.result }}
+        run: test "$RESULT" = success
+
   publish:
     name: Publish to Maven Central
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [build_and_test, android_device_test]
+    needs: [build_and_test, device_tests]
     runs-on: ubuntu-latest
     environment: tiny-compressor-ktx
     concurrency:
@@ -145,3 +166,35 @@ jobs:
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+
+  github_release:
+    name: Publish demo release assets
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download demo APK
+        uses: actions/download-artifact@v7
+        with:
+          name: demo-apk
+          path: release-assets
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd release-assets
+          mv demo-debug.apk tiny-compressor-demo.apk
+          sha256sum tiny-compressor-demo.apk > SHA256SUMS
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" tiny-compressor-demo.apk SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" tiny-compressor-demo.apk SHA256SUMS \
+              --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes \
+              --title "Tiny Compressor KTX ${GITHUB_REF_NAME#v}" \
+              --notes "The demo APK is a debug-signed sample app for trying the library. Install the library from Maven Central using the coordinates in the README."
+          fi

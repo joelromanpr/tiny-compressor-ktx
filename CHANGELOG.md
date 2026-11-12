@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.0 — 2026-11-11
+
+- Support Android 9 (API 28) and newer, using the older platform WebP encoder before API 30.
+- Add `compressWithResult` for actual output dimensions, format, encoder quality, and byte counts. URI input sizes and savings can be unknown.
+- Add `Options.forUpload(maxBytes)` to apply an upload limit without retaining source EXIF.
+- Add optional `CompressionConstraints` overloads for minimum encoder quality and dimensions. Existing calls keep their targeting behavior and signatures.
+- Add batch file compression with bounded concurrency, per-item failures, completion progress, and cancellation cleanup.
+- Replace the sample screen with an interactive size/format comparison and a credited NASA photograph.
+- Add reproducible compression and dependency-footprint measurements, plus compiled foreground and WorkManager upload examples.
+- Run library and upload-recipe device tests on API 28, 30, and 36. Releases include a debug-signed demo APK and checksum after Maven publishing succeeds.
+
+**Compatibility:** Existing APIs and `Options()` defaults are unchanged. The legacy default still retains selected JPEG EXIF, including GPS. Use `Options.forUpload(...)` or `keepExif = false` when those details are unnecessary. The new APIs are additive.
+
 ## 1.1.0 — 2026-09-25
 
 - Stage output before replacing a destination file, so failed encoding leaves an existing file intact. Concurrent cache outputs get unique names.

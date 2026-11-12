@@ -76,7 +76,7 @@ class UploadWorker(
             // Decode, size-limit, permission and unclassified server errors are not transient.
             return Result.failure(workDataOf("reason" to "prepare_or_upload_failed"))
         } finally {
-            withContext(NonCancellable + Dispatchers.IO) { attemptDirectory.deleteRecursively() }
+            withContext(NonCancellable + Dispatchers.IO) { removeOwnedDirectory(attemptDirectory) }
         }
         // UploadQueue removes durable input after WorkManager confirms a terminal state. Removing
         // it here would race a system stop between returning success and committing that success.

@@ -1,6 +1,6 @@
 # Upload recipes
 
-These Kotlin examples are compiled with the demo. They use `compressWithResult` and `Options.forUpload(maxBytes = 500_000)`, which removes source EXIF, including GPS. Use the result's actual `mimeType`: PNG inputs can remain PNG. The core library has no networking or WorkManager dependency.
+These Kotlin examples are compiled with the demo. They use `compressWithResult` and `Options.forUpload(maxBytes = 500_000)`, which removes source EXIF, including GPS. Use the result's actual `mimeType`: PNG inputs can remain PNG. The core library has no networking or WorkManager dependency. Both recipes also require the shared [OwnedDirectoryCleanup.kt](../demo/src/main/java/com/joelromanpr/tinycompressor/demo/examples/OwnedDirectoryCleanup.kt) helper; copy it with the foreground, queue, or worker examples.
 
 ## Foreground: Photo Picker → compression → upload
 
@@ -65,7 +65,7 @@ The worker compresses to its own attempt directory and invokes the real injected
 | Durable queued input | `UploadQueue` deletes it after WorkManager confirms `SUCCEEDED`, `FAILED`, or `CANCELLED`. Startup reconciliation repeats this check after process recreation. |
 | Worker attempt output | The worker deletes it in `finally`; a retry starts with a fresh output. |
 
-A worker can stop because constraints changed or its execution window ended, and WorkManager may run it again. Its cancellation therefore propagates while preserving the durable input. Deleting that input inside `doWork` before returning success would race WorkManager accepting the result. Use `UploadQueue.cancel` for an explicit cancellation so even work cancelled before it starts gets cleaned up. A cancellation cannot undo an upload the server has already accepted.
+A worker can stop because constraints changed or its execution window ended, and WorkManager may run it again. Its cancellation therefore propagates while preserving the durable input. Deleting that input inside `doWork` before returning success would race WorkManager accepting the result. Use `UploadQueue.cancel` for an explicit cancellation so even work cancelled before it starts gets cleaned up. A cancellation cannot undo an upload the server has already accepted. Cleanup is idempotent when observers, cancellation, and startup reconciliation run together. Symbolic links are removed without traversing their targets. I/O and security failures make cleanup best-effort; durable inputs left behind are checked again at the next startup.
 
 An abrupt process kill cannot run Kotlin `finally`. On the next app startup, queue reconciliation deletes inputs with terminal WorkInfo, resumes observers for unfinished requests, and removes copies older than one day that have no WorkManager record (for example, a crash during preparation). Fresh unregistered copies are left alone to avoid racing an enqueue. Attempt outputs live in app cache and can be evicted by Android; do not treat cache as durable storage. These examples assume ordinary small image uploads within WorkManager's execution window; longer jobs need an app-specific foreground strategy.
 
@@ -77,6 +77,6 @@ An abrupt process kill cannot run Kotlin `finally`. On the next app startup, que
 ./gradlew :demo:connectedDebugAndroidTest
 ```
 
-[UploadWorkerTest.kt](../demo/src/androidTest/java/com/joelromanpr/tinycompressor/demo/examples/UploadWorkerTest.kt) uses explicit test doubles to verify real image preparation, bounded transient retries, permanent failures, cancellation propagation and attempt-file cleanup. The companion `UploadQueueTest` runs a real WorkManager test scheduler to check confirmed-success cleanup and cancellation before a worker starts. The production examples contain no fake successful uploader.
+[UploadWorkerTest.kt](../demo/src/androidTest/java/com/joelromanpr/tinycompressor/demo/examples/UploadWorkerTest.kt) uses explicit test doubles to verify real image preparation, bounded transient retries, permanent failures, cancellation propagation and attempt-file cleanup. The companion `UploadQueueTest` runs a real WorkManager test scheduler to check confirmed-success cleanup and cancellation before a worker starts. The cleanup regression tests coordinate several removers on a real nested filesystem tree, force deletion during an active traversal, and check missing roots, symbolic links, and failure handling. The production examples contain no fake successful uploader.
 
 See Android's guidance on [worker testing](https://developer.android.com/develop/background-work/background-tasks/testing/persistent/worker-impl), [stopping and cancelling work](https://developer.android.com/develop/background-work/background-tasks/persistent/how-to/manage-work), and [persisting Photo Picker access](https://developer.android.com/training/data-storage/shared/photo-picker#persist-media-file-access).

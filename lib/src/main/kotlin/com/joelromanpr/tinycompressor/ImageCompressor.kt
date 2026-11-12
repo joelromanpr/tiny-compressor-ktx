@@ -81,6 +81,45 @@ public object ImageCompressor {
         }
 
     /**
+     * Compresses independent images with a bounded worker pool and returns results in input order.
+     *
+     * [concurrency] must be positive and defaults to one to limit bitmap memory use. Each item failure
+     * is returned without stopping other items; cancellation and fatal errors stop the batch. If the
+     * call does not return a complete list, its generated cache files are removed. Explicit destination
+     * files are retained, and a shared [Destination.File] is rejected for multiple inputs.
+     *
+     * Keep source files, URI access, and source byte arrays unchanged until the batch completes.
+     */
+    public suspend fun compressBatch(
+        context: Context,
+        sources: List<Source>,
+        options: Options = Options(),
+        concurrency: Int = 1,
+    ): List<BatchItemResult> = collectBatchResults(compressBatchAsFlow(context, sources, options, concurrency), options.destination)
+
+    /**
+     * Emits one completed item at a time, in completion order, with an aggregate completed count.
+     *
+     * Uses at most [concurrency] workers. Item exceptions are reported as [BatchItemResult.Failure];
+     * cancellation and fatal errors stop all workers. Emitted cache files belong to the collector.
+     * Delete emitted cache files when no longer needed, including after cancelling collection.
+     * Generated cache files that were not emitted are removed if collection stops. Explicit destination
+     * files are retained, and a shared [Destination.File] is rejected for multiple inputs.
+     *
+     * The input list is copied when this function is called. Keep its source files, URI access, and
+     * source byte arrays unchanged until collection completes. Each collection starts a new batch.
+     */
+    public fun compressBatchAsFlow(
+        context: Context,
+        sources: List<Source>,
+        options: Options = Options(),
+        concurrency: Int = 1,
+    ): Flow<BatchProgress> =
+        batchCompressionFlow(sources, options.destination, concurrency) { source ->
+            compressWithResult(context, source, options)
+        }
+
+    /**
      * Compresses [source] into memory. [Options.destination] is ignored and is never modified.
      *
      * When JPEG EXIF retention is requested, a private temporary file is needed to save metadata;

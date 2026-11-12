@@ -28,11 +28,11 @@ Add `google()` and `mavenCentral()` to your dependency repositories, then:
 ```kotlin
 // app/build.gradle.kts
 dependencies {
-    implementation("io.github.joelromanpr:tiny-compressor-ktx:1.2.0")
+    implementation("io.github.joelromanpr:tiny-compressor-ktx:1.2.1")
 }
 ```
 
-[Release notes](https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.2.0) · [Try the demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.0/tiny-compressor-demo.apk) · [Publication checks](artifacts/releases/1.2.0/verification.json)
+[Release notes](https://github.com/joelromanpr/tiny-compressor-ktx/releases/tag/v1.2.1) · [Try the demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.1/tiny-compressor-demo.apk) · [Publication checks](artifacts/releases/1.2.1/verification.json)
 
 ## Prepare an image
 
@@ -144,11 +144,13 @@ Cache extensions match the resolved format. For `Destination.File`, use a matchi
 
 ## Measurements and demo
 
-The [benchmark methodology](benchmark/README.md) explains timing, memory, visual-error metrics, and footprint measurements. Recorded 1.2.0 data: [compression table](benchmark/results/1.2.0-api36-emulator/summary.md), [raw samples](benchmark/results/1.2.0-api36-emulator/results.json), and [dependency footprint](benchmark/results/1.2.0-api36-emulator/dependency-footprint.json). The [1.1.0 baseline](benchmark/results/1.1.0-api36-emulator/README.md) is retained separately.
+The [benchmark methodology](benchmark/README.md) explains timing, memory, visual-error metrics, and footprint measurements. Recorded 1.2.0 baseline: [compression table](benchmark/results/1.2.0-api36-emulator/summary.md), [raw samples](benchmark/results/1.2.0-api36-emulator/results.json), and [dependency footprint](benchmark/results/1.2.0-api36-emulator/dependency-footprint.json). The [1.1.0 baseline](benchmark/results/1.1.0-api36-emulator/README.md) is retained separately.
+
+These measurements were recorded for 1.2.0; no 1.2.1 benchmark run is included. The [1.2.1 publication record](artifacts/releases/1.2.1/verification.json) covers verification of the current artifact.
 
 The recorded runs use an emulator; timings do not establish physical-device performance. PSNR is compared at each output's dimensions and does not count detail lost by downscaling. Sampled process PSS is not a guaranteed peak or per-operation allocation count. The footprint comparison disables shrinking and includes transitive dependencies; it does not predict R8, installed size, or Play download size.
 
-Open the repository in Android Studio and run `demo` on Android 9 or newer, or install the [debug-signed demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.0/tiny-compressor-demo.apk). The demo includes a sample image, format/size controls, before/after comparison, and cancellation.
+Open the repository in Android Studio and run `demo` on Android 9 or newer, or install the [debug-signed demo APK](https://github.com/joelromanpr/tiny-compressor-ktx/releases/download/v1.2.1/tiny-compressor-demo.apk). The demo includes a sample image, format/size controls, before/after comparison, and cancellation.
 
 ## Contribute
 

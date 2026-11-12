@@ -231,7 +231,7 @@ fun CompressionScreen(modifier: Modifier = Modifier) {
                     when (format) {
                         CompressFormat.PNG -> "PNG is lossless. Quality does not apply."
                         CompressFormat.JPEG -> "PNG inputs stay PNG. Choose WebP to convert them."
-                        CompressFormat.WEBP -> "WebP supports transparency. Quality 100 prefers lossless encoding."
+                        CompressFormat.WEBP -> "WebP supports transparency. Quality 100 uses lossless encoding on Android 10+, unless a size cap lowers quality."
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -1,0 +1,41 @@
+name: Image or API bug
+description: Report a reproducible compression or integration problem.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Please use a small reproducible image or image generator. Remove private EXIF/GPS data before attaching images or logs."
+  - type: input
+    id: version
+    attributes:
+      label: Library version
+      placeholder: "For example: 1.2.0"
+    validations:
+      required: true
+  - type: input
+    id: android
+    attributes:
+      label: Android version and device
+      placeholder: "API level, emulator or device model"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Include the source type (File, Uri, or Bytes), compression call/options, and a small image or generator.
+      render: kotlin
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual result
+      description: Include dimensions, format, final byte count, orientation, or transparency when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error or stack trace
+      render: text

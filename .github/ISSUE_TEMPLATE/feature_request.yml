@@ -1,0 +1,23 @@
+name: Feature or recipe request
+description: Describe a developer problem the library could solve.
+title: "[Feature]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to build?
+      description: Describe the concrete problem and your current workaround.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Suggested behavior or example
+      description: A small API example, desired result, or integration recipe is helpful.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Compatibility and constraints
+      description: Android API levels, formats, dependency limits, or performance requirements, if relevant.

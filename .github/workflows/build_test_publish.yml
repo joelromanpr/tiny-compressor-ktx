@@ -74,7 +74,7 @@ jobs:
           api-level: ${{ matrix.api }}
           target: google_apis
           arch: x86_64
-          script: ./gradlew :lib:connectedDebugAndroidTest
+          script: ./gradlew :lib:connectedDebugAndroidTest :demo:connectedDebugAndroidTest
       - name: Upload device test reports
         if: always()
         uses: actions/upload-artifact@v7
@@ -83,6 +83,8 @@ jobs:
           path: |
             lib/build/reports/androidTests/**
             lib/build/outputs/androidTest-results/**
+            demo/build/reports/androidTests/**
+            demo/build/outputs/androidTest-results/**
           if-no-files-found: ignore
 
   device_tests:

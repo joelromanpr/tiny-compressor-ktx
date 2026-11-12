@@ -47,7 +47,7 @@ import kotlin.math.sqrt
  *
  * A [Destination.File] is replaced only after the complete result has been encoded. Compression
  * reads the source before replacing the destination. When both paths refer to the same file,
- * success replaces that file with the compressed result; failure leaves it intact.
+ * replacement changes that file; encoding and validation failures leave it intact.
  */
 public object ImageCompressor {
     /**

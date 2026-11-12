@@ -47,3 +47,11 @@ python3 scripts/measure_footprint.py > footprint.json
 ```
 
 This reports compressed AAR size, the classes JAR, uncompressed class bytes, packaged native libraries, and total demo APK bytes. The AAR excludes transitive dependencies; the APK includes the entire demo and its assets. Neither number alone is the library's incremental app cost. To measure that, build the same app without this library/dependencies and pass its APK as `--baseline-apk`; keep assets, app sources, shrinking, and build settings otherwise equivalent. APK byte differences are neither installed size nor Play download size.
+
+For a controlled dependency-only comparison, run:
+
+```bash
+./scripts/measure_dependency_footprint.sh
+```
+
+This builds the opt-in `footprint` app's `baselineRelease` and `withCompressorRelease` flavors. Both use the same plain `android.app.Activity`, assets (none), application ID, SDK levels, and build settings. Only `withCompressor` declares the library dependency. Code and resource shrinking are disabled in both, so the APK delta includes the library and its transitive dependencies even though the sample Activity does not call them. This measures an unshrunk dependency addition to an otherwise empty app; it is not a prediction for an app using R8 or one that already depends on coroutines/ExifInterface. No device is needed. The JSON report includes the library version and Git revision, and defaults to `benchmark/results/local/dependency-footprint.json`.

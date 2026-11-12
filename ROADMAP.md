@@ -5,7 +5,7 @@ Tiny Compressor KTX focuses on dependable Android image preparation with a small
 | Contribution | Useful outcome | Suggested scope |
 | --- | --- | --- |
 | Assert pixels for mirrored EXIF orientations | Tests check left/right pixel positions as well as dimensions and the normalized orientation tag. | One asymmetric image generator and instrumented regression case; suitable first contribution. |
-| Add a transparent WebP regression fixture | Lossy and lossless WebP preserve the expected transparent pixels. | One small fixture or generator with source/license and decoded-alpha assertions. |
+| Cover semi-transparent WebP pixels | Lossy and lossless WebP preserve intermediate alpha values as well as fully transparent pixels. | One small fixture or generator with source/license and decoded-alpha assertions. |
 | Report a benchmark from a physical device | Maintainers can compare real device behavior with emulator measurements. | Record device/API, settings, raw repeated timings, output size and benchmark revision. |
 | Add a real HTTP-client adapter recipe | Developers can connect the existing uploader contract to their network stack. | One optional app example with response classification, cancellation, MIME and idempotency handling; no network dependency in core. |
 | Check the demo with large text and TalkBack | Controls and before/after comparison remain understandable and operable. | Reproduce one accessibility issue, fix it, and include real device evidence. |

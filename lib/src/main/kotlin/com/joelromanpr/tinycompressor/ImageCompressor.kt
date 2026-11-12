@@ -46,7 +46,8 @@ import kotlin.math.sqrt
  * Compresses Android images while bounding dimensions and optionally output size.
  *
  * A [Destination.File] is replaced only after the complete result has been encoded. Compression
- * does not alter the input file, even if the input and destination refer to the same path.
+ * reads the source before replacing the destination. When both paths refer to the same file,
+ * replacement changes that file; encoding and validation failures leave it intact.
  */
 public object ImageCompressor {
     /**

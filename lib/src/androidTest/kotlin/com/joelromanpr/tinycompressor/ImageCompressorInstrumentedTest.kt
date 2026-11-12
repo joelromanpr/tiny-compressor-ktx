@@ -97,6 +97,35 @@ public class ImageCompressorInstrumentedTest {
         }
 
     @Test
+    public fun webpOutputPreservesTransparencyAndMatchesExtension(): Unit =
+        runBlocking {
+            for (quality in listOf(80, 100)) {
+                val output =
+                    ImageCompressor.compress(
+                        context,
+                        Source.Bytes(imageBytes(64, 32, Bitmap.CompressFormat.PNG)),
+                        Options(format = CompressFormat.WEBP, quality = quality, keepExif = false),
+                    )
+                try {
+                    assertEquals("webp", output.extension)
+                    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                    BitmapFactory.decodeFile(output.absolutePath, bounds)
+                    assertEquals("image/webp", bounds.outMimeType)
+                    val decoded = requireNotNull(BitmapFactory.decodeFile(output.absolutePath))
+                    try {
+                        assertEquals(64, decoded.width)
+                        assertEquals(32, decoded.height)
+                        assertEquals(0, android.graphics.Color.alpha(decoded.getPixel(0, 0)))
+                    } finally {
+                        decoded.recycle()
+                    }
+                } finally {
+                    output.delete()
+                }
+            }
+        }
+
+    @Test
     public fun impossibleByteLimitKeepsExistingDestination(): Unit =
         runBlocking {
             val destination = File.createTempFile("preserve-limit-", ".jpg", context.cacheDir)
